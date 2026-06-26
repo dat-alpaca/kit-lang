@@ -1,11 +1,19 @@
 #pragma once
-#include <stdexcept>
+#include <fstream>
+#include <string>
 #include <vector>
+#include <stdexcept>
+#include <functional>
+#include <filesystem>
+#include <unordered_map>
 
 #include "common.hpp"
+#include "compiler/segment.hpp"
+#include "compiler/symbol.hpp"
 #include "parser/instruction.hpp"
 #include "parser/opcode.hpp"
 #include "parser/register.hpp"
+#include "platform/platform.hpp"
 
 namespace
 {
@@ -127,43 +135,37 @@ namespace
 
 namespace kit
 {
-    inline std::vector<u8> compile(const std::vector<instruction>& instructions)
-    {
-        std::vector<u8> code;
+    using handle_function = std::function<void(std::vector<u8>& code, const instruction& instruction)>;
 
+    static inline std::unordered_map<opcode, handle_function> gOpcodeMap =
+    {
+        { opcode::copy, handle_copy },
+        { opcode::add, handle_add },
+        { opcode::sub, handle_sub },
+        { opcode::mul, handle_mul },
+        { opcode::out, handle_out },
+        { opcode::in, handle_in },
+    };
+
+    inline void compile(const std::vector<instruction>& instructions, const std::filesystem::path& filepath)
+    {
+        std::ofstream file(filepath, std::ios::binary);
+
+        std::vector<segment> segments(2);
+        segments[TextSegment] = { .attributes = segment_attribute::read | segment_attribute::exec };
+        segments[DataSegment] = { .attributes = segment_attribute::read | segment_attribute::write };
+
+        // .text:
+        auto& textCode = segments[TextSegment].code;
         for (const auto& instruction : instructions)
         {
-            switch (instruction.code)
-            {
-                case opcode::copy:
-                    handle_copy(code, instruction);
-                    break;
-
-                case opcode::add:
-                    handle_add(code, instruction);
-                    break;
-
-                case opcode::sub:
-                    handle_sub(code, instruction);
-                    break;
-
-                case opcode::mul:
-                    handle_mul(code, instruction);
-                    break;
-
-                case opcode::in:
-                    handle_in(code, instruction);
-                    break;
-
-                case opcode::out:
-                    handle_out(code, instruction);
-                    break;
-
-                default:
-                    throw std::runtime_error("failed to compile");
-            }
+            if (gOpcodeMap.contains(instruction.code))
+                gOpcodeMap[instruction.code](textCode, instruction);
         }
 
-        return code;
+        // .data:
+        std::unordered_map<std::string, symbol> symbolTable;
+
+        kit::platform::write_executable(file, segments);
     }
 }

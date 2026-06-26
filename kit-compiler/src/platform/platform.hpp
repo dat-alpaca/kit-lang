@@ -3,8 +3,12 @@
 #include <vector>
 
 #include "common.hpp"
+#include "compiler/segment.hpp"
 
 namespace kit::platform
 {
-    void write_executable(std::ofstream& file, std::vector<u8> code);
+    constexpr u64 BaseAddress = 0x400000;
+    constexpr u64 PageSize = 0x1000;
+
+    void write_executable(std::ofstream& file, std::vector<segment>& segments);
 }

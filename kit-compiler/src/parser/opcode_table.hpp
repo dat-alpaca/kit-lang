@@ -12,7 +12,6 @@ namespace kit
         { "sub", opcode::sub },
         { "mul", opcode::mul },
 
-
         { "in", opcode::in },
         { "out", opcode::out },
     };

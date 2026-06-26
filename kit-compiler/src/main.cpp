@@ -1,11 +1,9 @@
-#include <fstream>
 #include <iostream>
 
+#include "utils/file.hpp"
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
 #include "compiler/compiler.hpp"
-#include "platform/platform.hpp"
-#include "utils/file.hpp"
 
 [[maybe_unused]]
 static void debug_lexer(const std::vector<kit::token>& tokens)
@@ -69,7 +67,6 @@ int main(int argc, char* argv[])
     // Lexer:
     kit::kit_lexer lexer { source };
     std::vector<kit::token> tokens;
-
     while (true)
     {
         auto token = lexer.next();
@@ -79,16 +76,14 @@ int main(int argc, char* argv[])
             break;
     }
 
+    debug_lexer(tokens);
+
     // Parser:
     kit::parser parser(tokens);
     std::vector<kit::instruction> instructions = parser.parse();
 
     // Compiler:
-    std::vector<kit::u8> code = kit::compile(instructions);
-
-    // Write:
-    std::ofstream file("main", std::ios::binary);
-    kit::platform::write_executable(file, code);
+    kit::compile(instructions, "main");
 
     return 0;
 }
