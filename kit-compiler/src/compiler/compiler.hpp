@@ -60,11 +60,12 @@ namespace
         
     }
 
+    // TO-DO: Platform-dependence:
     inline void handle_out(std::vector<kit::u8>& code, const kit::instruction& instruction)
     {
         using namespace kit;
 
-        // sub rsp,8
+        // sub rsp, 8
         code.insert(code.end(), { 0x48, 0x83, 0xEC, 0x08 });
 
         // mov [rsp], <register>
@@ -80,13 +81,47 @@ namespace
 
         code.insert(code.end(),
         {
-            0xB8, 0x01, 0x00, 0x00, 0x00,           // mov eax,1
-            0xBF, 0x01, 0x00, 0x00, 0x00,           // mov edi,1
-            0x48, 0x89, 0xE6,                       // mov rsi,rsp
-            0xBA, 0x08, 0x00, 0x00, 0x00,           // mov edx,8
-            0x0F, 0x05,                             // syscall
-            0x48, 0x83, 0xC4, 0x08                  // add rsp,8
+            0xB8, 0x01, 0x00, 0x00, 0x00,           // mov eax, 1
+            0xBF, 0x01, 0x00, 0x00, 0x00,           // mov edi, 1
+            0x48, 0x89, 0xE6,                       // mov rsi, rsp
+            0xBA, 0x08, 0x00, 0x00, 0x00,           // mov edx, 8
+            0x0F, 0x05,                             // syscall                  
         });
+
+        // add rsp, 8
+        code.insert(code.end(), { 0x48, 0x83, 0xC4, 0x08 });
+    }
+
+    // TO-DO: Platform-dependence:
+    inline void handle_in(std::vector<kit::u8>& code, const kit::instruction& instruction)
+    {
+        using namespace kit;
+
+        // sub rsp, 8
+        code.insert(code.end(), { 0x48, 0x83, 0xEC, 0x08 });
+
+        code.insert(code.end(),
+        {
+            0xB8, 0x00, 0x00, 0x00, 0x00,           // mov eax, 0
+            0xBF, 0x00, 0x00, 0x00, 0x00,           // mov edi, 0
+            0x48, 0x89, 0xE6,                       // mov rsi, rsp
+            0xBA, 0x08, 0x00, 0x00, 0x00,           // mov edx, 8
+            0x0F, 0x05,                             // syscall                  
+        });
+
+        // movzx <register>, byte ptr [rsp]
+        switch(instruction.operands[0].register_)
+        {
+            case register_k::ax:
+                code.insert(code.end(), { 0x48, 0x0F, 0xB6, 0x04, 0x24 });
+                break;
+
+            default:
+                throw std::runtime_error("compilation failed: invalid out register");
+        }
+
+        // add rsp, 8
+        code.insert(code.end(), { 0x48, 0x83, 0xC4, 0x08 });
     }
 }
 
@@ -117,6 +152,7 @@ namespace kit
                     break;
 
                 case opcode::in:
+                    handle_in(code, instruction);
                     break;
 
                 case opcode::out:
