@@ -7,15 +7,20 @@
 
 namespace kit
 {
+    using symbol_id = u64;
+    using section_id = u64;
+
     struct operand
     {
-        enum class kind { register_, immediate };
+        enum class kind { register_, immediate, pointer, section };
         kind type;
 
         union
         {
             register_k register_;
             u64 immediate;
+            symbol_id symbolID;
+            section_id sectionID;
         };
     };
 

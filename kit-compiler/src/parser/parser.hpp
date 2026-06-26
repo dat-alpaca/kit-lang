@@ -26,6 +26,14 @@ namespace kit
         bool match(token_kind kind);
 
     private:
+        symbol_id insert_symbol(std::string_view symbolName);
+        section_id get_section_from_name(std::string_view sectionName);
+
+    public:
+        std::vector<std::string>& get_symbols() { return mSymbolTable; }
+
+    private:
+        std::vector<std::string> mSymbolTable;
         std::span<const token> mTokens;
         u64 mCurrent = 0;
     };

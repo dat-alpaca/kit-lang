@@ -1,6 +1,9 @@
+#include <algorithm>
 #include <stdexcept>
+#include <string_view>
 
 #include "parser.hpp"
+#include "compiler/segment.hpp"
 #include "opcode_table.hpp"
 #include "lexer/token.hpp"
 #include "parser/instruction.hpp"
@@ -78,14 +81,16 @@ namespace kit
             case token_kind::token_register:
             {
                 register_k reg;
-                if (current.lexeme == "%AX")
+                auto lower = to_lower_view(current.lexeme);
+
+                if (std::ranges::equal(lower, std::string_view("ax")))
                     reg = register_k::ax;
                 else
                     throw std::runtime_error("failed to parse operands: unknown register");
 
                 return {
                     .type = operand::kind::register_,
-                    .register_ = reg
+                    .register_ = reg,
                 };
             }
 
@@ -94,6 +99,22 @@ namespace kit
                 return {
                     .type = operand::kind::immediate,
                     .immediate = std::stoull(std::string(current.lexeme))
+                };
+            }
+
+            case token_kind::pointer:
+            {
+                return {
+                    .type = operand::kind::pointer,
+                    .symbolID = insert_symbol(current.lexeme)
+                };
+            }
+
+            case token_kind::section:
+            {
+                return {
+                    .type = operand::kind::section,
+                    .sectionID = get_section_from_name(current.lexeme)
                 };
             }
 
@@ -122,5 +143,31 @@ namespace kit
 
         advance();
         return true;
+    }
+
+    symbol_id parser::insert_symbol(std::string_view symbolName)
+    {
+        auto symbolString = std::string(symbolName);
+
+        for (u64 i = 0; i < mSymbolTable.size(); ++i)
+        {
+            if (mSymbolTable[i] == symbolString)
+                return static_cast<symbol_id>(i);
+        }
+    
+        mSymbolTable.push_back(symbolString);
+        return mSymbolTable.size() - 1;
+    }
+
+    section_id parser::get_section_from_name(std::string_view sectionName)
+    {
+        auto lower = to_lower_view(sectionName);
+        if (std::ranges::equal(lower, std::string_view(".text")))
+            return TextSegment;
+
+        else if (std::ranges::equal(lower, std::string_view(".data")))
+            return DataSegment;
+
+        throw std::runtime_error("invalid section name");
     }
 }

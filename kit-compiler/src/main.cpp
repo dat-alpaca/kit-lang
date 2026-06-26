@@ -5,6 +5,8 @@
 #include "parser/parser.hpp"
 #include "compiler/compiler.hpp"
 
+#include "platform/platform.hpp"
+
 [[maybe_unused]]
 static void debug_lexer(const std::vector<kit::token>& tokens)
 {
@@ -35,6 +37,8 @@ static void debug_parser(const std::vector<kit::instruction>& instructions)
         {
             if (operand.type == kit::operand::kind::immediate)
                 std::cout << operand.immediate;
+            if (operand.type == kit::operand::kind::section)
+                std::cout << operand.sectionID;
             else
                 std::cout << kit::get_register_text(operand.register_);
             std::cout << ' ';
@@ -76,14 +80,17 @@ int main(int argc, char* argv[])
             break;
     }
 
-    debug_lexer(tokens);
-
     // Parser:
     kit::parser parser(tokens);
     std::vector<kit::instruction> instructions = parser.parse();
 
     // Compiler:
-    kit::compile(instructions, "main");
+    kit::compiler compiler;
+    compiler.compile(instructions);
+
+    // Write:
+    std::ofstream file("main", std::ios::binary);
+    kit::platform::write_executable(file, compiler.get_segments());
 
     return 0;
 }

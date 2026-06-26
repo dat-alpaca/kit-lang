@@ -24,6 +24,8 @@ namespace kit
         token lex_identifier();
         token lex_register();
         token lex_integer();
+        token lex_pointer();
+        token lex_section();
 
     private:
         std::string_view mSourceCode;

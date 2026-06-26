@@ -1,55 +1,22 @@
 #pragma once
-#include <fstream>
-#include <string>
 #include <vector>
 #include <stdexcept>
 #include <functional>
-#include <filesystem>
 #include <unordered_map>
 
 #include "common.hpp"
 #include "compiler/segment.hpp"
-#include "compiler/symbol.hpp"
-#include "parser/instruction.hpp"
-#include "parser/opcode.hpp"
+
 #include "parser/register.hpp"
-#include "platform/platform.hpp"
+#include "parser/opcode.hpp"
+#include "parser/instruction.hpp"
+
+#include "instruction_set/copy.hpp"
+#include "instruction_set/add.hpp"
 
 namespace
 {
-    inline void handle_copy(std::vector<kit::u8>& code, const kit::instruction& instruction)
-    {
-        using namespace kit;
-
-        code.push_back(0x48); // rex.w
-        code.push_back(0xC7); // mov r/m64, imm32
-
-        switch(instruction.operands[0].register_)
-        {
-            case register_k::ax:
-                code.push_back(0xC0);
-                break;
-
-            default:
-                throw std::runtime_error("compilation failed: invalid mov register");
-        }
-
-        u32 immediate = (u32)instruction.operands[1].immediate;
-        for (int i = 0; i < 4; ++i)
-            code.push_back((immediate >> (8 * i)) & 0xFF);
-    }
-
-    inline void handle_add(std::vector<kit::u8>& code, const kit::instruction& instruction)
-    {
-        using namespace kit;
-
-        code.push_back(0x48); // rex.w
-        code.push_back(0x05); // add rax, imm32
-
-        u32 immediate = (u32)instruction.operands[1].immediate;
-        for (int i = 0; i < 4; ++i)
-            code.push_back((immediate >> (8 * i)) & 0xFF);
-    }
+    using namespace kit;
 
     inline void handle_sub(std::vector<kit::u8>& code, const kit::instruction& instruction)
     {
@@ -147,25 +114,55 @@ namespace kit
         { opcode::in, handle_in },
     };
 
-    inline void compile(const std::vector<instruction>& instructions, const std::filesystem::path& filepath)
+    class compiler
     {
-        std::ofstream file(filepath, std::ios::binary);
-
-        std::vector<segment> segments(2);
-        segments[TextSegment] = { .attributes = segment_attribute::read | segment_attribute::exec };
-        segments[DataSegment] = { .attributes = segment_attribute::read | segment_attribute::write };
-
-        // .text:
-        auto& textCode = segments[TextSegment].code;
-        for (const auto& instruction : instructions)
+    public:
+        explicit compiler()
         {
-            if (gOpcodeMap.contains(instruction.code))
-                gOpcodeMap[instruction.code](textCode, instruction);
+            // Text section:
+            mSections.push_back({ .attributes = segment_attribute::read | segment_attribute::exec });
+            
+            // Data section:
+            mSections.push_back({ .attributes = segment_attribute::read | segment_attribute::write });
         }
 
-        // .data:
-        std::unordered_map<std::string, symbol> symbolTable;
+    public:
+        void compile(const std::vector<kit::instruction>& instructions)
+        {
+            for (const auto& instruction : instructions)
+            {
+                if (instruction.code == opcode::section)
+                {
+                    set_current_section(instruction.operands[0].sectionID);
+                    continue;
+                }
 
-        kit::platform::write_executable(file, segments);
-    }
+                if (gOpcodeMap.contains(instruction.code))
+                {
+                    gOpcodeMap[instruction.code](get_current_section_code(), instruction);
+                    continue;
+                }
+                
+                throw std::runtime_error("invalid opcode");
+            }
+        }
+
+    private:
+        void set_current_section(section_id id)
+        {
+            if (id > mSections.size())
+                throw std::runtime_error("invalid section id");
+
+            mCurrentSection = id;
+        }
+
+        inline std::vector<u8>& get_current_section_code() { return mSections[mCurrentSection].code; }
+
+    public: 
+        std::vector<segment>& get_segments() { return mSections; }
+
+    private:
+        std::vector<segment> mSections;
+        section_id mCurrentSection = TextSegment;
+    };
 }

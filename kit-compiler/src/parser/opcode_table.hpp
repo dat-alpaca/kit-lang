@@ -7,6 +7,8 @@ namespace kit
 {
     static inline std::unordered_map<std::string_view, opcode> kOpcodeTable =
     {
+        { "section", opcode::section },
+
         { "copy", opcode::copy },
         { "add", opcode::add },
         { "sub", opcode::sub },

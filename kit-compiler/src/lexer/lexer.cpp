@@ -45,6 +45,12 @@ namespace kit
             return { token_kind::newline, {}, currentLocation };
         }
 
+        if (character == '[')
+            return lex_pointer();
+
+        if (character == '.')
+            return lex_section();
+
         if (is_possible_identifier(character))
             return lex_identifier();
 
@@ -157,7 +163,7 @@ namespace kit
             advance();
     
         u64 finalPosition = mPosition - startingPosition;
-        return { token_kind::token_register, mSourceCode.substr(startingPosition, finalPosition), currentLocation };
+        return { token_kind::token_register, mSourceCode.substr(startingPosition + 1, finalPosition - 1), currentLocation };
     }
     
     token kit_lexer::lex_integer()
@@ -170,5 +176,52 @@ namespace kit
 
         u64 finalPosition = mPosition - startingPosition;
         return { token_kind::integer, mSourceCode.substr(startingPosition, finalPosition), currentLocation };
+    }
+
+    token kit_lexer::lex_pointer()
+    {
+        u64 startingPosition = mPosition;
+        location currentLocation = mLocation;
+
+        advance(); // skips the [
+
+        char character;
+        while (true)
+        {
+            character = peek();
+            if (!is_valid_identifier_character(character))
+                break;
+
+            advance();
+        }
+
+        advance(); // skips the ]
+
+        if (character != ']')
+            throw std::runtime_error("invalid pointer expression. expected closing brackets");
+
+        u64 finalPosition = mPosition - startingPosition;
+        return { token_kind::pointer, mSourceCode.substr(startingPosition + 1, finalPosition - 2), currentLocation };
+    }
+
+    token kit_lexer::lex_section()
+    {
+        u64 startingPosition = mPosition;
+        location currentLocation = mLocation;
+
+        advance(); // skips the .
+
+        char character;
+        while (true)
+        {
+            character = peek();
+            if (!is_valid_identifier_character(character))
+                break;
+
+            advance();
+        }
+
+        u64 finalPosition = mPosition - startingPosition;
+        return { token_kind::section, mSourceCode.substr(startingPosition, finalPosition), currentLocation };
     }
 }

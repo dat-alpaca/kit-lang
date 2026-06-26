@@ -1,7 +1,12 @@
-; prints A
-COPY %AX, 65
-OUT %AX
+section .text:
+    ; prints H
+    COPY %AX, 72
+    OUT %AX
 
-; prints \n
-COPY %AX, 10
-OUT %AX
+    ; prints i
+    COPY %AX, 105
+    OUT %AX
+
+    ; prints \n
+    COPY %AX, 10
+    OUT %AX

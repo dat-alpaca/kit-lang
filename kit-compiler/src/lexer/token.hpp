@@ -12,6 +12,8 @@ namespace kit
         
         token_register,
         integer,
+        pointer,
+        section,
 
         newline,
         comma,
@@ -26,6 +28,8 @@ namespace kit
             case token_kind::identifier: return "identifier"; 
             case token_kind::token_register: return "token_register"; 
             case token_kind::integer: return "integer"; 
+            case token_kind::pointer: return "pointer"; 
+            case token_kind::section: return "section"; 
             case token_kind::newline: return "newline"; 
             case token_kind::comma: return "comma"; 
             case token_kind::eof: return "eof";
