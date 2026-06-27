@@ -37,8 +37,6 @@ static void debug_parser(const std::vector<kit::instruction>& instructions)
         {
             if (operand.type == kit::operand::kind::immediate)
                 std::cout << operand.immediate;
-            if (operand.type == kit::operand::kind::section)
-                std::cout << operand.sectionID;
             else
                 std::cout << kit::get_register_text(operand.register_);
             std::cout << ' ';
@@ -82,11 +80,11 @@ int main(int argc, char* argv[])
 
     // Parser:
     kit::parser parser(tokens);
-    std::vector<kit::instruction> instructions = parser.parse();
+    parser.parse();
 
     // Compiler:
     kit::compiler compiler;
-    compiler.compile(instructions);
+    compiler.compile(parser.get_statements());
 
     // Write:
     std::ofstream file("main", std::ios::binary);

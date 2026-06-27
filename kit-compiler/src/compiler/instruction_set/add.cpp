@@ -40,11 +40,6 @@ static void handle_add_imm_to_register(std::vector<u8>& code, const instruction&
     write_imm32(code, immediate);
 }
 
-static void handle_add_address_value_to_register(std::vector<u8>& code, const instruction& instruction)
-{
-
-}
-
 namespace kit
 {
     void handle_add_(std::vector<u8>& code, const instruction& instruction)
@@ -71,17 +66,11 @@ namespace kit
 
                     case operand::kind::immediate:
                         return handle_add_imm_to_register(code, instruction);
-
-                    case operand::kind::pointer:
-                        return handle_add_address_value_to_register(code, instruction);
                 }
             } break;
 
-            case operand::kind::pointer:
-                throw std::runtime_error("add [mem], r/m64 not implemented");
-
             default:
-                throw std::runtime_error("invalid add instruction. must use register or pointer as operand 0");
+                throw std::runtime_error("invalid add instruction. must use register as operand 0");
         }
     }
 }

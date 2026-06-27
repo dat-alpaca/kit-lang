@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "parser/instruction.hpp"
+#include "parser/statement.hpp"
 
 namespace kit
 {

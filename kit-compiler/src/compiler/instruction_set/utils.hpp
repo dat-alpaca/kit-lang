@@ -11,5 +11,6 @@ namespace kit
 
     void write_mod_rm(std::vector<u8>& code, mod_field mod, u8 reg, u8 rm);
 
+    void write_imm32_at(std::vector<kit::u8>& code, u64 at, u32 imm32);
     void write_imm32(std::vector<u8>& code, u32 imm32);
 }

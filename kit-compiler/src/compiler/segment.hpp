@@ -28,6 +28,9 @@ namespace kit
         segment_attribute attributes = segment_attribute::none;
     };
 
+    constexpr static inline const char* TextSectionName = ".text";
+    constexpr static inline const char* DataSectionName = ".data";
+
     constexpr static inline u64 TextSegment = 0;
     constexpr static inline u64 DataSegment = 1;
 }

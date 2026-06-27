@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <variant>
 #include <vector>
 
 #include "common.hpp"
@@ -12,16 +14,16 @@ namespace kit
 
     struct operand
     {
-        enum class kind { register_, immediate, pointer, section };
+        enum class kind { register_, immediate, label };
         kind type;
 
         union
         {
             register_k register_;
             u64 immediate;
-            symbol_id symbolID;
-            section_id sectionID;
         };
+
+        std::string_view label;
     };
 
     struct instruction
@@ -29,4 +31,21 @@ namespace kit
         opcode code;
         std::vector<operand> operands;
     };
+
+    struct label
+    {
+        std::string_view name;
+    };
+
+    struct section
+    {
+        std::string_view name;
+    };
+
+    struct entry
+    {
+        std::string_view name;
+    };
+
+    using statement = std::variant<instruction, label, section, entry>;
 }

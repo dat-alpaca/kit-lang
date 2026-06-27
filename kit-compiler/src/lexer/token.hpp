@@ -10,13 +10,12 @@ namespace kit
         invalid = 0,
         identifier,
         
-        token_register,
+        register_,
         integer,
-        pointer,
-        section,
 
         newline,
         comma,
+        colon,
         eof,
     };
 
@@ -26,12 +25,11 @@ namespace kit
         {
             case token_kind::invalid: return "invalid"; 
             case token_kind::identifier: return "identifier"; 
-            case token_kind::token_register: return "token_register"; 
+            case token_kind::register_: return "token_register"; 
             case token_kind::integer: return "integer"; 
-            case token_kind::pointer: return "pointer"; 
-            case token_kind::section: return "section"; 
             case token_kind::newline: return "newline"; 
-            case token_kind::comma: return "comma"; 
+            case token_kind::comma: return "comma";
+            case token_kind::colon: return "colon";
             case token_kind::eof: return "eof";
 
             default:

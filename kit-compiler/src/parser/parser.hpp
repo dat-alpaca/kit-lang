@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "lexer/token.hpp"
-#include "instruction.hpp"
+#include "statement.hpp"
 
 namespace kit
 {
@@ -13,27 +13,32 @@ namespace kit
         explicit parser(std::span<const token> tokens);
 
     public:
-        std::vector<instruction> parse();
+        void parse();
 
     private:
+        label parse_label();
+        section parse_section_directive();
+        entry parse_entry_directive();
+
         instruction parse_instruction();
         opcode parse_opcode();
         operand parse_operand();
 
+        bool is_label() const;
+        bool is_section_directive() const;
+        bool is_entry_directive() const;
+
     private:
-        const token& peek() const;
+        bool valid_peek(u64 offset = 0) const;
+        const token& peek(u64 offset= 0) const;
         const token& advance();
         bool match(token_kind kind);
 
-    private:
-        symbol_id insert_symbol(std::string_view symbolName);
-        section_id get_section_from_name(std::string_view sectionName);
-
     public:
-        std::vector<std::string>& get_symbols() { return mSymbolTable; }
+        inline std::vector<statement>& get_statements() { return mStatements; }
 
     private:
-        std::vector<std::string> mSymbolTable;
+        std::vector<statement> mStatements;
         std::span<const token> mTokens;
         u64 mCurrent = 0;
     };

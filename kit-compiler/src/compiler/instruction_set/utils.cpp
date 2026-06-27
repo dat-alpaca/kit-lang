@@ -25,6 +25,15 @@ namespace kit
         code.push_back(modrm.value());
     }
 
+    void write_imm32_at(std::vector<u8>& code, u64 at, u32 imm32)
+    {
+        u8 bytes[4];
+        for (int i = 0; i < 4; ++i)
+            bytes[i] = (imm32 >> (8 * i)) & 0xFF;
+
+        code.insert(code.begin() + at, bytes, bytes + 4);
+    }
+
     void write_imm32(std::vector<kit::u8>& code, u32 imm32)
     {
         for (int i = 0; i < 4; ++i)

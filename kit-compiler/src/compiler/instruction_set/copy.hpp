@@ -1,9 +1,11 @@
 #pragma once
 #include <vector>
 #include "common.hpp"
-#include "parser/instruction.hpp"
+#include "parser/statement.hpp"
 
 namespace kit
 {
+    u64 get_copy_instruction_size(const instruction& instruction);
+
     void handle_copy(std::vector<u8>& code, const instruction& instruction);
 }

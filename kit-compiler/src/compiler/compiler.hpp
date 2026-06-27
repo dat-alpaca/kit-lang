@@ -9,10 +9,11 @@
 
 #include "parser/register.hpp"
 #include "parser/opcode.hpp"
-#include "parser/instruction.hpp"
+#include "parser/statement.hpp"
 
 #include "instruction_set/copy.hpp"
 #include "instruction_set/add.hpp"
+#include "instruction_set/jmp.hpp"
 
 namespace
 {
@@ -107,62 +108,38 @@ namespace kit
     static inline std::unordered_map<opcode, handle_function> gOpcodeMap =
     {
         { opcode::copy, handle_copy },
-        { opcode::add, handle_add },
-        { opcode::sub, handle_sub },
-        { opcode::mul, handle_mul },
-        { opcode::out, handle_out },
-        { opcode::in, handle_in },
+        { opcode::add,  handle_add },
+        { opcode::sub,  handle_sub },
+        { opcode::mul,  handle_mul },
+        { opcode::out,  handle_out },
+        { opcode::in,   handle_in },
+        { opcode::jmp,  handle_jmp }
     };
 
     class compiler
     {
     public:
-        explicit compiler()
-        {
-            // Text section:
-            mSections.push_back({ .attributes = segment_attribute::read | segment_attribute::exec });
-            
-            // Data section:
-            mSections.push_back({ .attributes = segment_attribute::read | segment_attribute::write });
-        }
+        explicit compiler();
 
     public:
-        void compile(const std::vector<kit::instruction>& instructions)
-        {
-            for (const auto& instruction : instructions)
-            {
-                if (instruction.code == opcode::section)
-                {
-                    set_current_section(instruction.operands[0].sectionID);
-                    continue;
-                }
-
-                if (gOpcodeMap.contains(instruction.code))
-                {
-                    gOpcodeMap[instruction.code](get_current_section_code(), instruction);
-                    continue;
-                }
-                
-                throw std::runtime_error("invalid opcode");
-            }
-        }
+        void compile(std::vector<statement>& statements);
 
     private:
-        void set_current_section(section_id id)
-        {
-            if (id > mSections.size())
-                throw std::runtime_error("invalid section id");
-
-            mCurrentSection = id;
-        }
-
-        inline std::vector<u8>& get_current_section_code() { return mSections[mCurrentSection].code; }
+        void zeroth_pass(std::vector<statement>& statements);
+        void first_pass(std::vector<statement>& statements);
+        void second_pass(std::vector<statement>& statements);
 
     public: 
-        std::vector<segment>& get_segments() { return mSections; }
+        std::vector<segment>& get_segments() { return mSegments; }
 
     private:
-        std::vector<segment> mSections;
-        section_id mCurrentSection = TextSegment;
+        std::unordered_map<std::string_view, u64> mLabelMap;
+        std::string_view mCurrentLabel;
+        std::string_view mEntryLabel;
+        u64 mFirstPassCounter = 0;
+    
+    private:
+        std::vector<segment> mSegments;
+        u64 mCurrentSectionID = 0;
     };
 }
