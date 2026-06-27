@@ -1,12 +1,24 @@
-section .text:
-    ; prints H
-    COPY %AX, 72
-    OUT %AX
+section .text
+    entry _main
 
-    ; prints i
-    COPY %AX, 105
-    OUT %AX
+_hi:
+    copy %ax, 75
+    out %ax             ; prints K
 
-    ; prints \n
-    COPY %AX, 10
-    OUT %AX
+    copy %ax, 105
+    out %ax             ; prints i
+
+    copy %ax, 116
+    out %ax             ; prints t
+
+    jmp _end
+
+_main:
+    copy %ax, 35
+    out %ax             ; prints #
+
+    jmp _hi
+
+_end:
+    copy %ax, 10
+    out %ax             ; prints \n
