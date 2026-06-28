@@ -6,7 +6,6 @@ section .data
     wb one          , 01, 00, 00, 00, 00, 00, 00, 00
     wb endl         , 10, 00, 00, 00, 00, 00, 00, 00
 
-
 section .text
     entry _main
 
@@ -44,7 +43,6 @@ _bad:
     out %ax             ; prints _BAD  
 
     jmp _end           
-
 
 _end:
     copy %ax, [endl]
