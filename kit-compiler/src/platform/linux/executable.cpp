@@ -87,13 +87,6 @@ namespace kit::platform
         static_assert(sizeof(Elf64_Ehdr) == 64);
         static_assert(sizeof(Elf64_Phdr) == 56);
 
-        [[maybe_unused]]
-        u64 codeSize = std::accumulate(segments.begin(), segments.end(), 0, [](u64 count, const segment& segment) {
-            return segment.code.size() + count;
-        });
-        [[maybe_unused]]
-        u64 totalSize = sizeof(Elf64_Ehdr) + sizeof(Elf64_Phdr) + codeSize;
-
         // ELF Header:
         u64 segmentCount = segments.size();
         u64 headerOffset = sizeof(Elf64_Ehdr) + (segmentCount * sizeof(Elf64_Phdr));
@@ -107,8 +100,15 @@ namespace kit::platform
 
         u64 currentFileOffset = headerOffset;
         u64 currentVirtualAddress = entryPoint;
+
+        std::vector<u64> alignFileOffsets;
         for (const auto& segment : segments)
         {
+            if (currentFileOffset != headerOffset)
+                currentFileOffset = align_address(currentFileOffset, PageSize);
+
+            alignFileOffsets.push_back(currentFileOffset);
+
             programHeaders.push_back(
                 create_program_header(segment, currentFileOffset, currentVirtualAddress, PageSize)
             );
@@ -120,10 +120,21 @@ namespace kit::platform
         
         file.write(reinterpret_cast<const char*>(&ehdr), sizeof(ehdr));
         file.write(reinterpret_cast<const char*>(programHeaders.data()), programHeaders.size() * sizeof(Elf64_Phdr));
-        for (const auto& segment : segments)
+        
+        for (u64 i = 0; i < segments.size(); ++i)
         {
-            if (!segment.code.empty())
-                file.write(reinterpret_cast<const char*>(segment.code.data()), segment.code.size());
+            auto& segment = segments[i];
+            if (segment.code.empty())
+                continue;
+
+            u64 currentPosition = file.tellp();
+            if (currentPosition < alignFileOffsets[i])
+            {
+                std::vector<char> padding(alignFileOffsets[i] - currentPosition, 0);
+                file.write(padding.data(), padding.size());
+            }
+
+            file.write(reinterpret_cast<const char*>(segment.code.data()), segment.code.size());
         }
     }
 }

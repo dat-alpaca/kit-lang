@@ -54,7 +54,6 @@ namespace kit
     section parser::parse_section_directive()
     {
         advance();                  // consumes "section"
-
         token current = peek();
         advance();                  // consumes the section name
 
@@ -138,6 +137,18 @@ namespace kit
 
             case token_kind::identifier:
             {
+                if (current.lexeme.starts_with('['))
+                {
+                    auto lexeme = current.lexeme;
+                    lexeme.remove_prefix(1);
+                    lexeme.remove_suffix(1);
+
+                    return {
+                        .type = operand::kind::memory,
+                        .label = lexeme,
+                    };
+                }
+
                 return {
                     .type = operand::kind::label,
                     .label = current.lexeme,
@@ -151,12 +162,21 @@ namespace kit
 
     bool parser::is_label() const
     {
+        if (!valid_peek(1))
+            return false;
+
         token current = peek();
         token next = peek(1);
 
-        return valid_peek(1) && current.kind == token_kind::identifier && next.kind == token_kind::colon;
+        return current.kind == token_kind::identifier && next.kind == token_kind::colon;
     }
-    
+
+    bool parser::is_memory_identifier() const
+    {
+        token current = peek();
+        return (current.kind == token_kind::identifier) && current.lexeme.starts_with('[');
+    }
+
     bool parser::is_section_directive() const
     {
         token current = peek();

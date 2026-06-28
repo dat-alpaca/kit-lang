@@ -18,7 +18,11 @@ static bool is_possible_identifier(char character)
 
 static bool is_valid_identifier_character(char character)
 {
-    return character == '_' || std::isalnum(static_cast<unsigned char>(character));
+    return 
+        (character == '[') || 
+        (character == ']') ||
+        (character == '_') || 
+        std::isalnum(static_cast<unsigned char>(character));
 }
 
 namespace kit

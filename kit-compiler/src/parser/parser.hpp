@@ -25,6 +25,7 @@ namespace kit
         operand parse_operand();
 
         bool is_label() const;
+        bool is_memory_identifier() const;
         bool is_section_directive() const;
         bool is_entry_directive() const;
 

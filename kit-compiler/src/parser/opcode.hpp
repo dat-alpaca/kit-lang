@@ -5,6 +5,8 @@ namespace kit
     enum class opcode
     {
         invalid = 0,
+        wb,
+
         copy,
         add,
         sub,
@@ -20,6 +22,7 @@ namespace kit
     {
         switch(code)
         {
+            case opcode::wb: return "wb";
             case opcode::copy: return "copy";
             case opcode::add: return "add";
             case opcode::sub: return "sub";

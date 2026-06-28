@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "copy.hpp"
+#include "parser/statement.hpp"
 #include "utils.hpp"
 
 using namespace kit;
@@ -32,6 +33,16 @@ static void handle_copy_imm_to_register(std::vector<u8>& code, const instruction
     write_imm32(code, immediate);
 }
 
+static void handle_copy_mem_to_register(std::vector<u8>& code, const instruction& instruction)
+{
+    // MOV r64, r/m64
+
+    code.push_back(0x48); // rex.w
+    code.push_back(0x8B); // MOV r64, r/m64
+
+    // reallocation step?
+}
+
 namespace kit
 {
     void handle_copy(std::vector<u8>& code, const instruction& instruction)
@@ -47,6 +58,9 @@ namespace kit
 
                     case operand::kind::immediate:
                         return handle_copy_imm_to_register(code, instruction);
+
+                    case operand::kind::memory:
+                        return handle_copy_mem_to_register(code, instruction);
                 }
             } break;
 

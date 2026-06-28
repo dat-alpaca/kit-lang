@@ -22,9 +22,11 @@ namespace kit
     {
         // Text section:
         mSegments.push_back({ .attributes = segment_attribute::read | segment_attribute::exec });
+        mSegmentPCs.push_back(0);
         
         // Data section:
         mSegments.push_back({ .attributes = segment_attribute::read | segment_attribute::write });
+        mSegmentPCs.push_back(0);
     }
 
     void compiler::compile(std::vector<statement>& statements)
@@ -50,13 +52,27 @@ namespace kit
             {
                 using T = std::decay_t<decltype(arg)>;
 
+                if (!mEntryLabel.empty())
+                    return;
+
                 // Section:
                 if constexpr (std::is_same_v<T, section>)
+                {
+                    if (arg.name == TextSectionName)
+                        mCurrentSectionID = TextSegment;
+                    
+                    else if (arg.name == DataSectionName)
+                        mCurrentSectionID = DataSegment;
+                    
                     return;
+                }
 
                 // Entry:
                 if constexpr (std::is_same_v<T, entry>)
-                    mEntryLabel = arg.name;
+                {
+                    if (mCurrentSectionID == TextSegment)
+                        mEntryLabel = arg.name;
+                }
             }, statement);
         }
 
@@ -66,6 +82,8 @@ namespace kit
 
     void compiler::first_pass(std::vector<statement>& statements)
     {
+        mCurrentSectionID = TextSegment;
+
         for (auto& statement : statements)
         {
             std::visit([&](auto&& arg)
@@ -74,18 +92,53 @@ namespace kit
 
                 // Section:
                 if constexpr (std::is_same_v<T, section>)
+                {
+                    if (arg.name == TextSectionName)
+                        mCurrentSectionID = TextSegment;
+                    
+                    else if (arg.name == DataSectionName)
+                        mCurrentSectionID = DataSegment;
+                    
                     return;
+                }
 
                 // Label:
                 if constexpr (std::is_same_v<T, label>)
-                    mLabelMap[arg.name] = mFirstPassCounter;
+                    mLabelMap[arg.name] = mSegmentPCs[mCurrentSectionID];
 
                 // Instruction:
                 else if constexpr (std::is_same_v<T, instruction>)
                 {
-                    instruction instruction = arg;
-                    if (gOpcodeMap.contains(instruction.code))
-                        mFirstPassCounter += get_instruction_size(instruction, gOpcodeMap[instruction.code]);
+                    if (mCurrentSectionID == TextSegment)
+                    {
+                        instruction instruction = arg;
+
+                        if (gOpcodeMap.contains(instruction.code))
+                            mSegmentPCs[mCurrentSectionID] += get_instruction_size(instruction, gOpcodeMap[instruction.code]);
+                    }
+                    else if (mCurrentSectionID == DataSegment)
+                    {
+                        instruction instruction = arg;
+
+                        if (instruction.code != opcode::wb)
+                            return;
+
+                        if (instruction.operands.empty())
+                            return;
+
+                        auto& dataCode = mSegments[DataSegment].code;
+
+                        const auto& nameOperand = instruction.operands[0].label;
+                        mMemoryOperandMap[nameOperand] = dataCode.size();
+
+                        for (auto& operand : instruction.operands)
+                        {
+                            if (operand.type != operand::kind::immediate)
+                                continue;
+                            
+                            dataCode.push_back(static_cast<u8>(operand.immediate));
+                        }
+                    }                    
                 }
             }, statement);
         }
@@ -93,6 +146,8 @@ namespace kit
 
     void compiler::second_pass(std::vector<statement>& statements)
     {
+        mCurrentSectionID = TextSegment;
+
         for (auto& statement : statements)
         {
             std::visit([&](auto&& arg)
@@ -114,20 +169,7 @@ namespace kit
                 else if constexpr (std::is_same_v<T, instruction>)
                 {
                     instruction& inst = arg;
-                    
-                    // resolve instructions
-                    if (!arg.operands.empty())
-                    {
-                        operand& operand0 = inst.operands[0];
-                        if (arg.code == opcode::jmp)
-                        {
-                            if (operand0.type == operand::kind::label)
-                            {
-                                operand0.type = operand::kind::immediate;
-                                operand0.immediate = mLabelMap[operand0.label]; 
-                            }
-                        }
-                    }
+                    resolve_instruction_operands(inst);
 
                     if (gOpcodeMap.contains(arg.code))
                     {
@@ -136,6 +178,24 @@ namespace kit
                     }
                 }
             }, statement);
+        }
+    }
+    
+    void compiler::resolve_instruction_operands(instruction& instruction)
+    {
+        if (instruction.operands.empty())
+            return;
+
+        for (auto& operand : instruction.operands)
+        {
+            if (operand.type == operand::kind::label)
+            {
+                operand.type = operand::kind::immediate;
+                operand.immediate = mLabelMap[operand.label]; 
+            }
+
+            if (operand.type == operand::kind::memory)
+                operand.immediate = mMemoryOperandMap[operand.label];
         }
     }
 }

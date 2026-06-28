@@ -45,17 +45,21 @@ namespace kit
         void first_pass(std::vector<statement>& statements);
         void second_pass(std::vector<statement>& statements);
 
+    private:
+        void resolve_instruction_operands(instruction& instruction);
+
     public: 
         std::vector<segment>& get_segments() { return mSegments; }
 
     private:
         std::unordered_map<std::string_view, u64> mLabelMap;
+        std::unordered_map<std::string_view, u64> mMemoryOperandMap;
         std::string_view mCurrentLabel;
         std::string_view mEntryLabel;
-        u64 mFirstPassCounter = 0;
     
     private:
         std::vector<segment> mSegments;
-        u64 mCurrentSectionID = 0;
+        std::vector<u64> mSegmentPCs;
+        u64 mCurrentSectionID = TextSegment;
     };
 }

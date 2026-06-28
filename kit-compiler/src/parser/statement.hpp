@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -14,7 +14,7 @@ namespace kit
 
     struct operand
     {
-        enum class kind { register_, immediate, label };
+        enum class kind { register_, immediate, label, memory };
         kind type;
 
         union

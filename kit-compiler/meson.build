@@ -11,6 +11,7 @@ sources = files(
     'src/compiler/instruction_set/copy.cpp',
     'src/compiler/instruction_set/out.cpp',
     'src/compiler/instruction_set/in.cpp',
+    'src/compiler/instruction_set/wb.cpp',
 
     'src/main.cpp',
 )
