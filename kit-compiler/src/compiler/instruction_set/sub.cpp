@@ -59,7 +59,7 @@ namespace kit
             } break;
 
             default:
-                throw std::runtime_error("invalid add instruction. must use register as operand 0");
+                throw std::runtime_error("invalid mul instruction. must use register as operand 0");
         }
     }
 }

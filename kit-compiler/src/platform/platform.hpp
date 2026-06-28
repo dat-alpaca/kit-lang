@@ -16,4 +16,5 @@ namespace kit::platform
 namespace kit::platform
 {
     void sys_out(std::vector<kit::u8>& code);
+    void sys_in(std::vector<kit::u8>& code);
 }

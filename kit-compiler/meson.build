@@ -9,8 +9,11 @@ sources = files(
 
     'src/compiler/instruction_set/utils.cpp',
     'src/compiler/instruction_set/add.cpp',
+    'src/compiler/instruction_set/mul.cpp',
+    'src/compiler/instruction_set/sub.cpp',
     'src/compiler/instruction_set/copy.cpp',
     'src/compiler/instruction_set/out.cpp',
+    'src/compiler/instruction_set/in.cpp',
 
     'src/main.cpp',
 )

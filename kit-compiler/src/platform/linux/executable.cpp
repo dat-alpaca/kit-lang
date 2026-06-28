@@ -141,4 +141,16 @@ namespace kit::platform
             0x0F, 0x05,                             // syscall                  
         });
     }
+
+    void sys_in(std::vector<kit::u8>& code)
+    {
+        code.insert(code.end(),
+        {
+            0xB8, 0x00, 0x00, 0x00, 0x00,           // mov eax, 0
+            0xBF, 0x00, 0x00, 0x00, 0x00,           // mov edi, 0
+            0x48, 0x89, 0xE6,                       // mov rsi, rsp
+            0xBA, 0x08, 0x00, 0x00, 0x00,           // mov edx, 8
+            0x0F, 0x05,                             // syscall                  
+        });
+    }
 }

@@ -1,13 +1,11 @@
 #pragma once
 #include <vector>
-#include <stdexcept>
 #include <functional>
 #include <unordered_map>
 
 #include "common.hpp"
 #include "compiler/segment.hpp"
 
-#include "parser/register.hpp"
 #include "parser/opcode.hpp"
 #include "parser/statement.hpp"
 
@@ -16,48 +14,8 @@
 #include "instruction_set/jmp.hpp"
 #include "instruction_set/out.hpp"
 #include "instruction_set/sub.hpp"
-
-namespace
-{
-    using namespace kit;
-
-    inline void handle_mul(std::vector<kit::u8>& code, const kit::instruction& instruction)
-    {
-        
-    }
-
-    // TO-DO: Platform-dependence:
-    inline void handle_in(std::vector<kit::u8>& code, const kit::instruction& instruction)
-    {
-        using namespace kit;
-
-        // sub rsp, 8
-        code.insert(code.end(), { 0x48, 0x83, 0xEC, 0x08 });
-
-        code.insert(code.end(),
-        {
-            0xB8, 0x00, 0x00, 0x00, 0x00,           // mov eax, 0
-            0xBF, 0x00, 0x00, 0x00, 0x00,           // mov edi, 0
-            0x48, 0x89, 0xE6,                       // mov rsi, rsp
-            0xBA, 0x08, 0x00, 0x00, 0x00,           // mov edx, 8
-            0x0F, 0x05,                             // syscall                  
-        });
-
-        // movzx <register>, byte ptr [rsp]
-        switch(instruction.operands[0].register_)
-        {
-            case register_k::ax:
-                code.insert(code.end(), { 0x48, 0x0F, 0xB6, 0x04, 0x24 });
-                break;
-
-            default:
-                throw std::runtime_error("compilation failed: invalid out register");
-        }
-
-        // add rsp, 8
-        code.insert(code.end(), { 0x48, 0x83, 0xC4, 0x08 });
-    }
-}
+#include "instruction_set/mul.hpp"
+#include "instruction_set/in.hpp"
 
 namespace kit
 {
