@@ -17,7 +17,6 @@ The KIT language is a assembly language based on x86 and provides a miniscule in
 - [x] JMP label
 - [x] IN AX
 - [x] OUT AX
-- [ ] CF flag (uses `stc` and `clc`)
 
 > [!WARNING]
 > This project is currently only available on Linux. I may implement a EXE header in the future.
