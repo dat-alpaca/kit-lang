@@ -4,4 +4,4 @@ project('kit-lang', 'cpp',
             'cpp_std=c++23',
         ])
 
-subdir('kit-compiler')
+subdir('kit-assembler')

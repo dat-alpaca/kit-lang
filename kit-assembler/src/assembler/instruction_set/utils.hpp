@@ -3,7 +3,7 @@
 
 #include "common.hpp"
 #include "parser/register.hpp"
-#include "compiler/modrm.hpp"
+#include "assembler/modrm.hpp"
 
 namespace kit
 {

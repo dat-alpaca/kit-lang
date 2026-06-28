@@ -42,7 +42,7 @@ static void handle_sub_imm_to_register(std::vector<u8>& code, const instruction&
 
 namespace kit
 {
-    void handle_sub(compiler&, std::vector<u8>& code, const instruction& instruction)
+    void handle_sub(assembler&, std::vector<u8>& code, const instruction& instruction)
     {
         switch(instruction.operands[0].type)
         {

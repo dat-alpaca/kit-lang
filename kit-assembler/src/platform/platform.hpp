@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "common.hpp"
-#include "compiler/reallocation.hpp"
-#include "compiler/segment.hpp"
+#include "assembler/reallocation.hpp"
+#include "assembler/segment.hpp"
 
 namespace kit::platform
 {

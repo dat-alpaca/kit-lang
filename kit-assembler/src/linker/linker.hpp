@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "compiler/reallocation.hpp"
+#include "assembler/reallocation.hpp"
 
 namespace kit
 {

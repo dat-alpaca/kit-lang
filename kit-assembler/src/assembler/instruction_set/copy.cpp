@@ -4,7 +4,7 @@
 #include "copy.hpp"
 #include "parser/statement.hpp"
 #include "utils.hpp"
-#include "compiler/compiler.hpp"
+#include "assembler/assembler.hpp"
 
 using namespace kit;
 
@@ -34,7 +34,7 @@ static void handle_copy_imm_to_register(std::vector<u8>& code, const instruction
     write_imm32(code, immediate);
 }
 
-static void handle_copy_mem_to_register(compiler& compiler, std::vector<u8>& code, const instruction& instruction)
+static void handle_copy_mem_to_register(assembler& assembler, std::vector<u8>& code, const instruction& instruction)
 {
     u8 register_ = register_from_operand(instruction.operands[0].register_);
     u64 address = instruction.operands[1].immediate;
@@ -48,7 +48,7 @@ static void handle_copy_mem_to_register(compiler& compiler, std::vector<u8>& cod
         u64 placeholder = 0;
         write_imm64(code, placeholder);
 
-        compiler.insert_reallocation
+        assembler.insert_reallocation
         ({ 
             .codeByteOffset = code.size() - sizeof(u64), 
             .dataByteOffset = address
@@ -65,7 +65,7 @@ static void handle_copy_mem_to_register(compiler& compiler, std::vector<u8>& cod
 
 namespace kit
 {
-    void handle_copy(compiler& compiler, std::vector<u8>& code, const instruction& instruction)
+    void handle_copy(assembler& assembler, std::vector<u8>& code, const instruction& instruction)
     {
         switch(instruction.operands[0].type)
         {
@@ -80,7 +80,7 @@ namespace kit
                         return handle_copy_imm_to_register(code, instruction);
 
                     case operand::kind::memory:
-                        return handle_copy_mem_to_register(compiler, code, instruction);
+                        return handle_copy_mem_to_register(assembler, code, instruction);
                 }
             } break;
 

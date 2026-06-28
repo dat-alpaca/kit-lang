@@ -1,13 +1,13 @@
 #include "out.hpp"
 #include "utils.hpp"
-#include "compiler/modrm.hpp"
+#include "assembler/modrm.hpp"
 #include "platform/platform.hpp"
 
 using namespace kit;
 
 namespace kit
 {
-    void handle_out(compiler&, std::vector<kit::u8>& code, const kit::instruction& instruction)
+    void handle_out(assembler&, std::vector<kit::u8>& code, const kit::instruction& instruction)
     {
         using namespace kit;
 

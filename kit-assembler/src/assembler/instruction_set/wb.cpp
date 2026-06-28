@@ -2,7 +2,7 @@
 
 namespace kit
 {
-    void handle_wb(compiler&, std::vector<u8>& dataCode, const instruction& instruction)
+    void handle_wb(assembler&, std::vector<u8>& dataCode, const instruction& instruction)
     {
         for (u64 i = 0; i < instruction.operands.size(); ++i)
         {

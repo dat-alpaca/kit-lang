@@ -48,7 +48,7 @@ If you actually want to build this thing, you are going to need:
     ```
 
 3. **Build and Run**
-    The following command will compile the project, create a `deploy` folder, and copy the compiler into it.
+    The following command will compile the project, create a `deploy` folder, and copy the assembler into it.
     ```bash
     ./scripts/build
     ```
@@ -58,7 +58,7 @@ If you actually want to build this thing, you are going to need:
     ```bash
     cp test.kit deploy/test.kit
     cd deploy
-    ./kit-compiler test.kit
+    ./kit-assembler test.kit
     chmod +x ./main
     ./main
     ```

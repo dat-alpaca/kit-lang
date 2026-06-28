@@ -3,4 +3,4 @@ cd build
 meson compile
 cd ..
 mkdir -p deploy
-cp ./build/kit-compiler/kit-compiler ./deploy/kit-compiler 
+cp ./build/kit-assembler/kit-assembler ./deploy/kit-assembler 

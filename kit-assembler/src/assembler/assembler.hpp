@@ -4,8 +4,8 @@
 #include <unordered_map>
 
 #include "common.hpp"
-#include "compiler/reallocation.hpp"
-#include "compiler/segment.hpp"
+#include "assembler/reallocation.hpp"
+#include "assembler/segment.hpp"
 
 #include "parser/opcode.hpp"
 #include "parser/statement.hpp"
@@ -20,8 +20,8 @@
 
 namespace kit
 {
-    class compiler;
-    using handle_function = std::function<void(compiler&, std::vector<u8>&, const instruction&)>;
+    class assembler;
+    using handle_function = std::function<void(assembler&, std::vector<u8>&, const instruction&)>;
 
     static inline std::unordered_map<opcode, handle_function> gOpcodeMap =
     {
@@ -34,13 +34,13 @@ namespace kit
         { opcode::jmp,  handle_jmp }
     };
 
-    class compiler
+    class assembler
     {
     public:
-        explicit compiler();
+        explicit assembler();
 
     public:
-        void compile(std::vector<statement>& statements);
+        void assemble(std::vector<statement>& statements);
         void insert_reallocation(reallocation&& reallocation);
 
     private:

@@ -1,5 +1,5 @@
-#include "compiler.hpp"
-#include "compiler/segment.hpp"
+#include "assembler.hpp"
+#include "assembler/segment.hpp"
 #include "parser/opcode.hpp"
 #include "parser/statement.hpp"
 #include <stdexcept>
@@ -8,17 +8,17 @@
 
 using namespace kit;
 
-static u64 get_instruction_size(compiler& compiler, const instruction& instruction, const handle_function& function)
+static u64 get_instruction_size(assembler& assembler, const instruction& instruction, const handle_function& function)
 {
     std::vector<u8> temporary;
-    function(compiler, temporary, instruction);
+    function(assembler, temporary, instruction);
 
     return temporary.size();
 }
 
 namespace kit
 {
-    compiler::compiler()
+    assembler::assembler()
     {
         // Text section:
         mSegments.push_back({ .attributes = segment_attribute::read | segment_attribute::exec });
@@ -29,7 +29,7 @@ namespace kit
         mSegmentPCs.push_back(0);
     }
 
-    void compiler::compile(std::vector<statement>& statements)
+    void assembler::assemble(std::vector<statement>& statements)
     {
         zeroth_pass(statements);
 
@@ -44,7 +44,7 @@ namespace kit
         second_pass(statements);
     }
 
-    void compiler::insert_reallocation(reallocation&& reallocation)
+    void assembler::insert_reallocation(reallocation&& reallocation)
     {
         mReallocations.push_back(std::move(reallocation));
     }
@@ -52,7 +52,7 @@ namespace kit
 
 namespace kit
 {
-    void compiler::zeroth_pass(std::vector<statement>& statements)
+    void assembler::zeroth_pass(std::vector<statement>& statements)
     {
         for (auto& statement : statements)
         {
@@ -88,7 +88,7 @@ namespace kit
             throw std::runtime_error("attempted to initialize a program without specifying the entry point");
     }
 
-    void compiler::first_pass(std::vector<statement>& statements)
+    void assembler::first_pass(std::vector<statement>& statements)
     {
         mCurrentSectionID = TextSegment;
 
@@ -150,7 +150,7 @@ namespace kit
         mReallocations.clear();
     }
 
-    void compiler::second_pass(std::vector<statement>& statements)
+    void assembler::second_pass(std::vector<statement>& statements)
     {
         mCurrentSectionID = TextSegment;
 
@@ -187,7 +187,7 @@ namespace kit
         }
     }
     
-    void compiler::resolve_instruction_operands(instruction& instruction)
+    void assembler::resolve_instruction_operands(instruction& instruction)
     {
         if (instruction.operands.empty())
             return;

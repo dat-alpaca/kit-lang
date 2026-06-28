@@ -3,9 +3,9 @@
 #include <fstream>
 
 #include "common.hpp"
-#include "compiler/reallocation.hpp"
-#include "compiler/segment.hpp"
-#include "compiler/linker.hpp"
+#include "assembler/reallocation.hpp"
+#include "assembler/segment.hpp"
+#include "linker/linker.hpp"
 
 #include "platform/platform.hpp"
 #include "utils/memory_utils.hpp"

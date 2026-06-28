@@ -3,7 +3,7 @@
 #include "utils/file.hpp"
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
-#include "compiler/compiler.hpp"
+#include "assembler/assembler.hpp"
 
 #include "platform/platform.hpp"
 
@@ -82,13 +82,13 @@ int main(int argc, char* argv[])
     kit::parser parser(tokens);
     parser.parse();
 
-    // Compiler:
-    kit::compiler compiler;
-    compiler.compile(parser.get_statements());
+    // Assembler:
+    kit::assembler assembler;
+    assembler.assemble(parser.get_statements());
 
     // Write:
     std::ofstream file("main", std::ios::binary);
-    kit::platform::write_executable(file, compiler.get_segments(), std::move(compiler.get_realloactions()) );
+    kit::platform::write_executable(file, assembler.get_segments(), std::move(assembler.get_realloactions()) );
 
     return 0;
 }

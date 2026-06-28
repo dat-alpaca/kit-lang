@@ -18,7 +18,7 @@ static void handle_mul_register_to_register(std::vector<u8>& code, const instruc
 
 namespace kit
 {
-    void handle_mul(compiler&, std::vector<u8>& code, const instruction& instruction)
+    void handle_mul(assembler&, std::vector<u8>& code, const instruction& instruction)
     {
         switch(instruction.operands[0].type)
         {
