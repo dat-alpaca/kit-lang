@@ -1,4 +1,6 @@
 #pragma once
+#include <array>
+#include <string_view>
 
 namespace kit
 {
@@ -6,33 +8,33 @@ namespace kit
     {
         invalid = 0,
         wb,
-
         copy,
         add,
         sub,
         mul,
-        
         in,
         out,
-
         jmp,
     };
 
-    static inline const char* get_opcode_text(opcode code)
+    static inline constexpr std::array kOpcodeTable
     {
-        switch(code)
-        {
-            case opcode::wb: return "wb";
-            case opcode::copy: return "copy";
-            case opcode::add: return "add";
-            case opcode::sub: return "sub";
-            case opcode::mul: return "mul";
-            case opcode::in: return "in";
-            case opcode::out: return "out";
-            case opcode::jmp: return "jmp";
+        std::pair{ "wb"  , opcode::wb   },
+        std::pair{ "copy", opcode::copy },
+        std::pair{ "add" , opcode::add  },
+        std::pair{ "sub" , opcode::sub  },
+        std::pair{ "mul" , opcode::mul  },
+        std::pair{ "in"  , opcode::in   },
+        std::pair{ "out" , opcode::out  },
+        std::pair{ "jmp" , opcode::jmp  },
+    };
 
-            default:
-                return "invalid";
-        }
+    constexpr std::string_view get_opcode_text(opcode op)
+    {
+        for (auto [name, value] : kOpcodeTable)
+            if (value == op)
+                return name;
+
+        return "invalid";
     }
 }

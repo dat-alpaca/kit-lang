@@ -3,7 +3,7 @@
 #include <string_view>
 
 #include "parser.hpp"
-#include "opcode_table.hpp"
+#include "opcode.hpp"
 #include "lexer/token.hpp"
 
 #include "parser/statement.hpp"
