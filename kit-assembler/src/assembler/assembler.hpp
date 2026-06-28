@@ -13,10 +13,12 @@
 #include "instruction_set/copy.hpp"
 #include "instruction_set/add.hpp"
 #include "instruction_set/jmp.hpp"
+#include "instruction_set/jcc.hpp"
 #include "instruction_set/out.hpp"
 #include "instruction_set/sub.hpp"
 #include "instruction_set/mul.hpp"
 #include "instruction_set/in.hpp"
+#include "instruction_set/cmp.hpp"
 
 namespace kit
 {
@@ -26,12 +28,15 @@ namespace kit
     static inline std::unordered_map<opcode, handle_function> gOpcodeMap =
     {
         { opcode::copy, handle_copy },
-        { opcode::add,  handle_add },
-        { opcode::sub,  handle_sub },
-        { opcode::mul,  handle_mul },
-        { opcode::out,  handle_out },
-        { opcode::in,   handle_in },
-        { opcode::jmp,  handle_jmp }
+        { opcode::add,  handle_add  },
+        { opcode::sub,  handle_sub  },
+        { opcode::mul,  handle_mul  },
+        { opcode::out,  handle_out  },
+        { opcode::in,   handle_in   },
+        { opcode::jmp,  handle_jmp  },
+        { opcode::jb,   handle_jb   },
+        { opcode::jnb,  handle_jnb  },
+        { opcode::cmp,  handle_cmp  },
     };
 
     class assembler

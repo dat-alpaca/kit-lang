@@ -15,6 +15,9 @@ namespace kit
         in,
         out,
         jmp,
+        jb,
+        jnb,
+        cmp,
     };
 
     static inline constexpr std::array kOpcodeTable
@@ -27,6 +30,9 @@ namespace kit
         std::pair{ "in"  , opcode::in   },
         std::pair{ "out" , opcode::out  },
         std::pair{ "jmp" , opcode::jmp  },
+        std::pair{ "jb"  , opcode::jb   },
+        std::pair{ "jnb" , opcode::jnb  },
+        std::pair{ "cmp" , opcode::cmp  },
     };
 
     constexpr std::string_view get_opcode_text(opcode op)

@@ -12,6 +12,7 @@ sources = files(
     'src/assembler/instruction_set/out.cpp',
     'src/assembler/instruction_set/in.cpp',
     'src/assembler/instruction_set/wb.cpp',
+    'src/assembler/instruction_set/cmp.cpp',
 
     'src/main.cpp',
 )

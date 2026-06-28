@@ -1,5 +1,6 @@
 section .data
     wb m0           , 70, 73, 84, 00, 00, 00, 00, 00    ; FIT
+    wb m1           , 20, 79, 75, 00, 00, 00, 00, 00    ; _OK
     
     wb one          , 01, 00, 00, 00, 00, 00, 00, 00
     wb endl         , 10, 00, 00, 00, 00, 00, 00, 00
@@ -18,7 +19,17 @@ _main:
     add %cx, %ax        ; cx += ax
     out %cx             ; prints KIT             
 
+    ; Prints OK:
+    copy %ax, 10
+    cmp %ax, 1      
+    jnb _ok              ; ax > 1
+
+    ; Ignores otherwise:
     jmp _end
+
+_ok:
+    copy %ax, [m1]
+    out %ax             ; prints _OK           
 
 _end:
     copy %ax, [endl]
