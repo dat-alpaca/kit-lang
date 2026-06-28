@@ -81,7 +81,7 @@ namespace kit::platform
 
 namespace kit::platform
 {
-    void write_executable(std::ofstream& file, std::vector<segment>& segments, std::vector<reallocation>&& reallocations)
+    void write_executable(std::ofstream& file, std::vector<segment>& segments, std::span<const reallocation> reallocations)
     {
         auto& textSegment = segments[TextSegment];   
         write_exit_code(textSegment.code);
@@ -126,7 +126,7 @@ namespace kit::platform
         file.write(reinterpret_cast<const char*>(programHeaders.data()), programHeaders.size() * sizeof(Elf64_Phdr));
         
         // Link:
-        linker linker(std::move(reallocations), virtualAddresses[DataSegment]); 
+        linker linker(reallocations, virtualAddresses[DataSegment]); 
         linker.link(segments[TextSegment].code, segments[DataSegment].code);
 
         // Write:

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <span>
 #include "assembler/reallocation.hpp"
 
 namespace kit
@@ -7,7 +8,7 @@ namespace kit
     class linker
     {
     public:
-        linker(std::vector<reallocation>&& reallocations, u64 dataBaseVirtualAddress)
+        linker(std::span<const reallocation> reallocations, u64 dataBaseVirtualAddress)
             : mReallocations(std::move(reallocations))
             , mDataBaseVirtualAddress(dataBaseVirtualAddress)
         {
@@ -27,7 +28,7 @@ namespace kit
         }
 
     private:
-        std::vector<reallocation> mReallocations;
+        std::span<const reallocation> mReallocations;
         u64 mDataBaseVirtualAddress = 0;
     };
 }
