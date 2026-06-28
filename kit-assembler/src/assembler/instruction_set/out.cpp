@@ -18,7 +18,7 @@ namespace kit
         code.push_back(0x89); // mov r/m64
 
         u8 register_ = register_from_operand(instruction.operands[0].register_);
-        write_mod_rm(code, mod_field::no_displacement, register_, sib);
+        write_mod_rm_sib(code, mod_field::no_displacement, register_);
 
         code.push_back(0x24); // SIB: rsp base
 

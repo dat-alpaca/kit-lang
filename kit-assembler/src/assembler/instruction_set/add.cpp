@@ -2,6 +2,7 @@
 #include "add.hpp"
 #include "assembler/assembler.hpp"
 #include "parser/register.hpp"
+#include "parser/statement.hpp"
 #include "utils.hpp"
 
 using namespace kit;
@@ -50,7 +51,7 @@ static void handle_add_mem_to_register(assembler& assembler, std::vector<u8>& co
     if (register_ == rax)
     {
         code.push_back(0x48); // rex.w
-        code.push_back(0xA1); // MOV RAX, moffs643
+        code.push_back(0xA1); // ADD RAX, moffs643
         
         u64 placeholder = 0;
         write_imm64(code, placeholder);
@@ -63,7 +64,7 @@ static void handle_add_mem_to_register(assembler& assembler, std::vector<u8>& co
     }
     else
     {
-        throw std::runtime_error("MOV r64, r/m64 not implemented");
+        throw std::runtime_error("ADD r64, r/m64 not implemented");
         /* implement */
         code.push_back(0x48); // rex.w
         code.push_back(0x8B); // MOV r64, r/m64
@@ -72,7 +73,7 @@ static void handle_add_mem_to_register(assembler& assembler, std::vector<u8>& co
 
 namespace kit
 {
-    void handle_add(assembler&, std::vector<u8>& code, const instruction& instruction)
+    void handle_add(assembler& assembler, std::vector<u8>& code, const instruction& instruction)
     {
         switch(instruction.operands[0].type)
         {
@@ -85,6 +86,9 @@ namespace kit
 
                     case operand::kind::immediate:
                         return handle_add_imm_to_register(code, instruction);
+                    
+                    case operand::kind::memory:
+                        return handle_add_mem_to_register(assembler, code, instruction);
                 }
             } break;
 

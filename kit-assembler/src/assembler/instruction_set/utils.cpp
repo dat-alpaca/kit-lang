@@ -1,5 +1,7 @@
 #include "utils.hpp"
+#include "assembler/modrm.hpp"
 #include "parser/register.hpp"
+#include <cassert>
 #include <stdexcept>
 
 namespace kit
@@ -22,6 +24,20 @@ namespace kit
         mod_rm modrm
         {
             .rm = rm,
+            .reg = reg,
+            .mod = mod,
+        };
+
+        code.push_back(modrm.value());
+    }
+
+    void write_mod_rm_sib(std::vector<u8>& code, mod_field mod, u8 reg)
+    {
+        assert(mod != mod_field::direct);
+
+        mod_rm modrm
+        {
+            .rm = 0b100,
             .reg = reg,
             .mod = mod,
         };

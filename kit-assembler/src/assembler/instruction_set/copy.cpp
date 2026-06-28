@@ -2,6 +2,8 @@
 #include <vector>
 
 #include "copy.hpp"
+#include "assembler/modrm.hpp"
+#include "assembler/sib.hpp"
 #include "parser/statement.hpp"
 #include "utils.hpp"
 #include "assembler/assembler.hpp"
@@ -56,10 +58,31 @@ static void handle_copy_mem_to_register(assembler& assembler, std::vector<u8>& c
     }
     else
     {
-        throw std::runtime_error("MOV r64, r/m64 not implemented");
-        /* implement */
-        code.push_back(0x48); // rex.w
-        code.push_back(0x8B); // MOV r64, r/m64
+        u64 rex = 0x48;         // rex.w
+        if (register_ > rdi) 
+            rex |= 0x04;        // extended registers
+
+        code.push_back(rex); 
+        code.push_back(0x8B);   // MOV r64, r/m64
+
+        write_mod_rm_sib(code, mod_field::no_displacement, register_);
+
+        sib sibByte = {
+            .base  = sib_no_base,
+            .index = sib_no_index,
+            .scale = 0b000,
+        };
+
+        code.push_back(sibByte.value());
+
+        u32 placeholder = 0;
+        write_imm32(code, placeholder);
+
+        assembler.insert_reallocation
+        ({ 
+            .codeByteOffset = code.size() - sizeof(u32), 
+            .dataByteOffset = address
+        });
     }
 }
 

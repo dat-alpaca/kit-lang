@@ -16,7 +16,7 @@ namespace kit
     public:
         constexpr u8 value() const
         {
-            return (static_cast<u8>(mod) << 6) | (static_cast<u8>(reg) << 3) | rm;
+            return *reinterpret_cast<const u8*>(this);
         }
 
     public:
@@ -24,8 +24,6 @@ namespace kit
         u8 reg : 3;
         mod_field mod : 2;
     };
-
-    constexpr static inline u8 sib = 0b100;
 
     constexpr static inline u8 rax = 0b000;
     constexpr static inline u8 rcx = 0b001;
