@@ -1,28 +1,28 @@
 # KIT Lang
-> This assembly language is based on the Kyoto Institute of Technology Programming II lectures and is only meant to be used for educational purposes. There are many issues in this codebase which will not be addressed. 
+> This assembly language is based on the Kyoto Institute of Technology Programming II lectures and is only meant to be used for educational purposes. There are many issues in this codebase that will not be addressed, **such as optimization**.
 
-The KIT language is a assembly language based on x86 and provides a miniscule instruction set. Many instructions have not been implemented, but a list can be found in the following section.
+KIT is an x86-inspired assembly language based on my university's programming course on assembly languages. It provides the following minimal instruction set:
 
-- [X] COPY AX, imm32
-- [x] COPY AX, mem
-- [ ] COPY mem, AX
-- [x] ADD AX, imm32
-- [x] ADD AX, mem
-- [x] MUL reg
-- [ ] MUL AX, imm32
-- [ ] MUL AX, mem
-- [x] CMP AX, mem
-- [x] JB label
-- [x] JNB label
-- [x] JMP label
-- [x] IN AX
-- [x] OUT AX
+- COPY r64, imm32
+- COPY r64, mem
+- COPY mem, r64
+- ADD r64, imm32
+- ADD r64, mem
+- MUL r64
+- CMP r64, mem
+- JB label
+- JNB label
+- JMP label
+- IN r64
+- OUT r64
+
+Currently, four 64-bit registers (r64) are available: `AX`, `BX`, `CX`, and `DX`.
 
 > [!WARNING]
-> This project is currently only available on Linux. I may implement a EXE header in the future.
+> This project is currently only available on Linux. I may add support for generating Windows executables in the future.
 
 # Getting Started
-As is the case with all my previous projects, no prebuilt binaries have been released at the time of writing. If you want to use it, you'll need to build it yourself (sorry).
+Like my previous projects, this one doesn't have prebuilt binaries. So, you will need to build it yourself (sorry).
 
 The latest version of this project has only been tested on [Fedora Linux 43 (KDE Plasma Edition)](https://www.fedoraproject.org/).
 
@@ -39,8 +39,8 @@ If you actually want to build this thing, you are going to need:
     ```
     <br>
 
-2. **Setup the project**
-    This project has no build flags. All you need to do is set it up:
+2. **Set up the project**
+    This project doesn't have any build options. All you need to do is set it up:
     
     ```bash
     ./scripts/setup
@@ -48,12 +48,12 @@ If you actually want to build this thing, you are going to need:
     ```
 
 3. **Build and Run**
-    The following command will compile the project, create a `deploy` folder, and copy the assembler into it.
+    The following command will compile the project, create a `deploy` folder, and copy the assembler into it:
     ```bash
     ./scripts/build
     ```
 
-    That's all you need to do. If you want to test the application, I have provided a `test.kit` file. You can use the code below to test it out:
+    That's all you need to do. To test the assembler, copy the included `test.kit` file:
 
     ```bash
     cp test.kit deploy/test.kit
@@ -62,6 +62,15 @@ If you actually want to build this thing, you are going to need:
     chmod +x ./main
     ./main
     ```
+
+# Sources
+These are the awesome resources that I have used to build this assembler:
+
+- [x86 and amd64 instruction reference](https://www.felixcloutier.com/x86/)
+- [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
+- [ELF from scratch](https://www.conradk.com/elf-from-scratch/)
+
+The overall design of this project is based on a book I read called [Crafting Interpreters](https://craftinginterpreters.com/contents.html). I'm not sure whether production-grade assemblers work this way, but I hope my code isn't too far off.
 
 # License
 This project is licensed under the [MIT License](LICENSE).

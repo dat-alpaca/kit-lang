@@ -88,6 +88,39 @@ static void handle_copy_mem_to_register(assembler& assembler, std::vector<u8>& c
     }
 }
 
+static void handle_copy_register_to_mem(assembler& assembler, std::vector<u8>& code, const instruction& instruction)
+{
+    u8 register_ = register_from_operand(instruction.operands[1].register_);
+    u64 address = instruction.operands[0].immediate;
+
+    u64 rex = 0x48;         // rex.w
+    if (register_ > rdi) 
+        rex |= 0x04;        // extended registers
+
+    code.push_back(rex); 
+    code.push_back(0x89);   // MOV r/m64, r64
+
+    write_mod_rm_sib(code, mod_field::no_displacement, register_);
+
+    sib sibByte = 
+    {
+        .base  = sib_no_base,
+        .index = sib_no_index,
+        .scale = 0b000,
+    };
+    code.push_back(sibByte.value());
+
+    u32 placeholder = 0;
+    write_imm32(code, placeholder);
+
+    assembler.insert_reallocation
+    ({ 
+        .codeByteOffset = code.size() - sizeof(u32), 
+        .dataByteOffset = address,
+        .size = sizeof(u32)
+    });
+}
+
 namespace kit
 {
     void handle_copy(assembler& assembler, std::vector<u8>& code, const instruction& instruction)
@@ -106,8 +139,24 @@ namespace kit
 
                     case operand::kind::memory:
                         return handle_copy_mem_to_register(assembler, code, instruction);
+
+                    default:
+                        throw std::runtime_error("invalid copy instruction. must use register as operand 0");
                 }
             } break;
+
+            case operand::kind::memory:
+            {
+                switch (instruction.operands[1].type)
+                {
+                    case operand::kind::register_:
+                        return handle_copy_register_to_mem(assembler, code, instruction);
+
+                    default:
+                        throw std::runtime_error("invalid copy instruction");
+                }
+            } break;
+
 
             default:
                 throw std::runtime_error("invalid copy instruction. must use register as operand 0");
