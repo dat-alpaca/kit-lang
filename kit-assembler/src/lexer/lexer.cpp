@@ -27,13 +27,13 @@ static bool is_valid_identifier_character(char character)
 
 namespace kit
 {
-    kit_lexer::kit_lexer(std::string_view sourceCode)
+    lexer::lexer(std::string_view sourceCode)
         : mSourceCode(sourceCode)
     {
         /* Blank */
     }
 
-    token kit_lexer::next()
+    token lexer::next()
     {
         skip_spaces();
 
@@ -79,7 +79,7 @@ namespace kit
 
 namespace kit
 {
-    char kit_lexer::peek() const
+    char lexer::peek() const
     {
         if (mPosition >= mSourceCode.size())
             return '\0';
@@ -87,7 +87,7 @@ namespace kit
         return mSourceCode[mPosition];
     }
 
-    char kit_lexer::advance()
+    char lexer::advance()
     {
         char character = peek();
 
@@ -104,7 +104,7 @@ namespace kit
         return character;
     }
 
-    void kit_lexer::skip_comment()
+    void lexer::skip_comment()
     {
         while (true)
         {
@@ -116,7 +116,7 @@ namespace kit
         }
     }
 
-    void kit_lexer::skip_spaces()
+    void lexer::skip_spaces()
     {
         while (true)
         {
@@ -141,7 +141,7 @@ namespace kit
 
 namespace kit
 {
-    token kit_lexer::lex_identifier()
+    token lexer::lex_identifier()
     {
         u64 startingPosition = mPosition;
         location currentLocation = mLocation;
@@ -159,7 +159,7 @@ namespace kit
         return { token_kind::identifier, mSourceCode.substr(startingPosition, finalPosition), currentLocation };
     }
 
-    token kit_lexer::lex_register()
+    token lexer::lex_register()
     {
         u64 startingPosition = mPosition;
         location currentLocation = mLocation;
@@ -173,7 +173,7 @@ namespace kit
         return { token_kind::register_, mSourceCode.substr(startingPosition + 1, finalPosition - 1), currentLocation };
     }
     
-    token kit_lexer::lex_integer()
+    token lexer::lex_integer()
     {
         u64 startingPosition = mPosition;
         location currentLocation = mLocation;
@@ -185,7 +185,7 @@ namespace kit
         return { token_kind::integer, mSourceCode.substr(startingPosition, finalPosition), currentLocation };
     }
 
-    token kit_lexer::lex_section()
+    token lexer::lex_section()
     {
         u64 startingPosition = mPosition;
         location currentLocation = mLocation;

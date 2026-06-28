@@ -4,10 +4,10 @@
 
 namespace kit
 {
-    class kit_lexer
+    class lexer
     {
     public:
-        explicit kit_lexer(std::string_view sourceCode);
+        explicit lexer(std::string_view sourceCode);
 
     public:
         token next();

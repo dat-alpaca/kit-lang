@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
     std::string source = kit::file_read_contents(filepath);
 
     // Lexer:
-    kit::kit_lexer lexer { source };
+    kit::lexer lexer { source };
     std::vector<kit::token> tokens;
     while (true)
     {
