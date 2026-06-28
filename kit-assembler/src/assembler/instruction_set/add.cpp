@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include "add.hpp"
 #include "assembler/assembler.hpp"
+#include "assembler/sib.hpp"
 #include "parser/register.hpp"
 #include "parser/statement.hpp"
 #include "utils.hpp"
@@ -44,31 +45,38 @@ static void handle_add_imm_to_register(std::vector<u8>& code, const instruction&
 
 static void handle_add_mem_to_register(assembler& assembler, std::vector<u8>& code, const instruction& instruction)
 {
+    // ADD r64, r/m64
+
     u8 register_ = register_from_operand(instruction.operands[0].register_);
     u64 address = instruction.operands[1].immediate;
 
-    // ADD RAX, moffs643
-    if (register_ == rax)
-    {
-        code.push_back(0x48); // rex.w
-        code.push_back(0xA1); // ADD RAX, moffs643
-        
-        u64 placeholder = 0;
-        write_imm64(code, placeholder);
+    u64 rex = 0x48;         // rex.w
+    if (register_ > rdi) 
+        rex |= 0x04;        // extended registers
 
-        assembler.insert_reallocation
-        ({ 
-            .codeByteOffset = code.size() - sizeof(u64), 
-            .dataByteOffset = address
-         });
-    }
-    else
+    code.push_back(rex); 
+    code.push_back(0x03);   // ADD r64, r/m64
+
+    write_mod_rm_sib(code, mod_field::no_displacement, register_);
+
+    // SIB:
+    sib sibByte = 
     {
-        throw std::runtime_error("ADD r64, r/m64 not implemented");
-        /* implement */
-        code.push_back(0x48); // rex.w
-        code.push_back(0x8B); // MOV r64, r/m64
-    }
+        .base  = sib_no_base,
+        .index = sib_no_index,
+        .scale = 0b00,
+    };
+    code.push_back(sibByte.value());
+
+    u32 placeholder = 0;
+    write_imm32(code, placeholder);
+
+    assembler.insert_reallocation
+    ({ 
+        .codeByteOffset = code.size() - sizeof(u32), 
+        .dataByteOffset = address,
+        .size = sizeof(u32)
+    });
 }
 
 namespace kit

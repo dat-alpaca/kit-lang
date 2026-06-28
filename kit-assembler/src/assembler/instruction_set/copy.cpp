@@ -53,7 +53,8 @@ static void handle_copy_mem_to_register(assembler& assembler, std::vector<u8>& c
         assembler.insert_reallocation
         ({ 
             .codeByteOffset = code.size() - sizeof(u64), 
-            .dataByteOffset = address
+            .dataByteOffset = address,
+            .size = sizeof(u64)
          });
     }
     else
@@ -67,12 +68,12 @@ static void handle_copy_mem_to_register(assembler& assembler, std::vector<u8>& c
 
         write_mod_rm_sib(code, mod_field::no_displacement, register_);
 
-        sib sibByte = {
+        sib sibByte = 
+        {
             .base  = sib_no_base,
             .index = sib_no_index,
             .scale = 0b000,
         };
-
         code.push_back(sibByte.value());
 
         u32 placeholder = 0;
@@ -81,7 +82,8 @@ static void handle_copy_mem_to_register(assembler& assembler, std::vector<u8>& c
         assembler.insert_reallocation
         ({ 
             .codeByteOffset = code.size() - sizeof(u32), 
-            .dataByteOffset = address
+            .dataByteOffset = address,
+            .size = sizeof(u32)
         });
     }
 }

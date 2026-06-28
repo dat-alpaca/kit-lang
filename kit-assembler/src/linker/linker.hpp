@@ -22,7 +22,7 @@ namespace kit
             {
                 u64 absoluteAddress = mDataBaseVirtualAddress + reallocation.dataByteOffset;
 
-                for (int i = 0; i < 8; ++i)
+                for (int i = 0; i < reallocation.size; ++i)
                     code[reallocation.codeByteOffset + i] = static_cast<u8>((absoluteAddress >> (i * 8)) & 0xFF);
             }
         }

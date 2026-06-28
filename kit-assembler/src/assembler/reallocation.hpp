@@ -7,5 +7,6 @@ namespace kit
     {
         u64 codeByteOffset;
         u64 dataByteOffset;
+        u8 size;
     };
 }
