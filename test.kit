@@ -1,22 +1,24 @@
 section .data
-    wb hashtag      , 35, 0, 0, 0, 0, 0, 0, 0
-    wb m0           , 75, 73, 84, 0, 0, 0, 0, 0
-    wb endl         , 10, 0, 0, 0, 0, 0, 0, 0
+    wb m0           , 70, 73, 84, 00, 00, 00, 00, 00    ; FIT
+    
+    wb one          , 01, 00, 00, 00, 00, 00, 00, 00
+    wb endl         , 10, 00, 00, 00, 00, 00, 00, 00
+
 
 section .text
     entry _main
 
-_hi:
-    copy %ax, [m0]      
-    out %ax                 ; prints Kit             
+_main:
+    copy %cx, [m0]      ; cx := JIT
+    
+    copy %ax, 1         ; ax := 1
+    copy %bx, 5         ; bx := 5
+    mul %bx             ; ax *= bx
+
+    add %cx, %ax        ; cx += ax
+    out %cx             ; prints KIT             
 
     jmp _end
-
-_main:
-    copy %ax, [hashtag]     
-    out %ax                 ; prints #
-
-    jmp _hi
 
 _end:
     copy %ax, [endl]

@@ -8,6 +8,7 @@ The KIT language is a assembly language based on x86 and provides a miniscule in
 - [ ] COPY mem, AX
 - [x] ADD AX, imm32
 - [x] ADD AX, mem
+- [x] MUL reg
 - [ ] MUL AX, imm32
 - [ ] MUL AX, mem
 - [ ] CMP AX, mem
