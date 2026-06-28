@@ -1,24 +1,23 @@
+section .data
+    wb hashtag      , 35, 0, 0, 0, 0, 0, 0, 0
+    wb m0           , 75, 73, 84, 0, 0, 0, 0, 0
+    wb endl         , 10, 0, 0, 0, 0, 0, 0, 0
+
 section .text
     entry _main
 
 _hi:
-    copy %ax, 75
-    out %ax             ; prints K
-
-    copy %ax, 105
-    out %ax             ; prints i
-
-    copy %ax, 116
-    out %ax             ; prints t
+    copy %ax, [m0]      
+    out %ax                 ; prints Kit             
 
     jmp _end
 
 _main:
-    copy %ax, 35
-    out %ax             ; prints #
+    copy %ax, [hashtag]     
+    out %ax                 ; prints #
 
     jmp _hi
 
 _end:
-    copy %ax, 10
-    out %ax             ; prints \n
+    copy %ax, [endl]
+    out %ax                 ; prints \n
