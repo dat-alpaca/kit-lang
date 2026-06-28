@@ -113,12 +113,8 @@ namespace kit
         {
             case token_kind::register_:
             {
-                register_k reg;
-                auto lower = to_lower_view(current.lexeme);
-
-                if (std::ranges::equal(lower, std::string_view("ax")))
-                    reg = register_k::ax;
-                else
+                register_k reg = get_register(current.lexeme);;
+                if (reg == register_k::invalid)
                     throw std::runtime_error("failed to parse operands: unknown register");
 
                 return {

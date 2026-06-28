@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include "parser/register.hpp"
 #include <stdexcept>
 
 namespace kit
@@ -8,9 +9,12 @@ namespace kit
         switch (register_)
         {
             case register_k::ax: return rax;
+            case register_k::bx: return rbx;
+            case register_k::cx: return rcx;
+            case register_k::dx: return rdx;
+            default:
+                throw std::runtime_error("invalid register operand");
         }
-
-        throw std::runtime_error("invalid register operand");
     }
 
     void write_mod_rm(std::vector<kit::u8>& code, mod_field mod, u8 reg, u8 rm)
