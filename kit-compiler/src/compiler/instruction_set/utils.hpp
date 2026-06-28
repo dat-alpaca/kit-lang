@@ -13,4 +13,5 @@ namespace kit
 
     void write_imm32_at(std::vector<kit::u8>& code, u64 at, u32 imm32);
     void write_imm32(std::vector<u8>& code, u32 imm32);
+    void write_imm64(std::vector<kit::u8>& code, u64 imm64);
 }

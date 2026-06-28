@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
     // Write:
     std::ofstream file("main", std::ios::binary);
-    kit::platform::write_executable(file, compiler.get_segments());
+    kit::platform::write_executable(file, compiler.get_segments(), std::move(compiler.get_realloactions()) );
 
     return 0;
 }

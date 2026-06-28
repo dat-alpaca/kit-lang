@@ -15,7 +15,8 @@ namespace kit
         write_imm32_at(code, offset + 1, rel32);
     }
 
-    inline void handle_jmp(std::vector<u8>& code, const instruction& instruction)
+    class compiler;
+    inline void handle_jmp(compiler&, std::vector<u8>& code, const instruction& instruction)
     {
         // JMP near (5x bytes)
 

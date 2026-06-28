@@ -1,10 +1,12 @@
-#include <numeric>
 #include <vector>
 #include <elf.h>
 #include <fstream>
 
 #include "common.hpp"
+#include "compiler/reallocation.hpp"
 #include "compiler/segment.hpp"
+#include "compiler/linker.hpp"
+
 #include "platform/platform.hpp"
 #include "utils/memory_utils.hpp"
 
@@ -79,7 +81,7 @@ namespace kit::platform
 
 namespace kit::platform
 {
-    void write_executable(std::ofstream& file, std::vector<segment>& segments)
+    void write_executable(std::ofstream& file, std::vector<segment>& segments, std::vector<reallocation>&& reallocations)
     {
         auto& textSegment = segments[TextSegment];   
         write_exit_code(textSegment.code);
@@ -102,13 +104,15 @@ namespace kit::platform
         u64 currentVirtualAddress = entryPoint;
 
         std::vector<u64> alignFileOffsets;
+        std::vector<u64> virtualAddresses;
         for (const auto& segment : segments)
         {
             if (currentFileOffset != headerOffset)
                 currentFileOffset = align_address(currentFileOffset, PageSize);
 
             alignFileOffsets.push_back(currentFileOffset);
-
+            virtualAddresses.push_back(currentVirtualAddress);
+            
             programHeaders.push_back(
                 create_program_header(segment, currentFileOffset, currentVirtualAddress, PageSize)
             );
@@ -121,6 +125,11 @@ namespace kit::platform
         file.write(reinterpret_cast<const char*>(&ehdr), sizeof(ehdr));
         file.write(reinterpret_cast<const char*>(programHeaders.data()), programHeaders.size() * sizeof(Elf64_Phdr));
         
+        // Link:
+        linker linker(std::move(reallocations), virtualAddresses[DataSegment]); 
+        linker.link(segments[TextSegment].code, segments[DataSegment].code);
+
+        // Write:
         for (u64 i = 0; i < segments.size(); ++i)
         {
             auto& segment = segments[i];

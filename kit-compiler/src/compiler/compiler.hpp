@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "common.hpp"
+#include "compiler/reallocation.hpp"
 #include "compiler/segment.hpp"
 
 #include "parser/opcode.hpp"
@@ -19,7 +20,8 @@
 
 namespace kit
 {
-    using handle_function = std::function<void(std::vector<u8>& code, const instruction& instruction)>;
+    class compiler;
+    using handle_function = std::function<void(compiler&, std::vector<u8>&, const instruction&)>;
 
     static inline std::unordered_map<opcode, handle_function> gOpcodeMap =
     {
@@ -39,6 +41,7 @@ namespace kit
 
     public:
         void compile(std::vector<statement>& statements);
+        void insert_reallocation(reallocation&& reallocation);
 
     private:
         void zeroth_pass(std::vector<statement>& statements);
@@ -50,6 +53,7 @@ namespace kit
 
     public: 
         std::vector<segment>& get_segments() { return mSegments; }
+        std::vector<reallocation>& get_realloactions() { return mReallocations; }
 
     private:
         std::unordered_map<std::string_view, u64> mLabelMap;
@@ -58,6 +62,7 @@ namespace kit
         std::string_view mEntryLabel;
     
     private:
+        std::vector<reallocation> mReallocations;
         std::vector<segment> mSegments;
         std::vector<u64> mSegmentPCs;
         u64 mCurrentSectionID = TextSegment;

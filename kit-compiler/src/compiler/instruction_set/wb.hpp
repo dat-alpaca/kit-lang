@@ -4,5 +4,6 @@
 
 namespace kit
 {
-    void handle_wb(std::vector<u8>& code, const instruction& instruction);
+    class compiler;
+    void handle_wb(compiler&, std::vector<u8>& code, const instruction& instruction);
 }

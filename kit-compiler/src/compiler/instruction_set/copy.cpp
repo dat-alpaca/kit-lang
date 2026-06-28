@@ -4,6 +4,7 @@
 #include "copy.hpp"
 #include "parser/statement.hpp"
 #include "utils.hpp"
+#include "compiler/compiler.hpp"
 
 using namespace kit;
 
@@ -33,19 +34,38 @@ static void handle_copy_imm_to_register(std::vector<u8>& code, const instruction
     write_imm32(code, immediate);
 }
 
-static void handle_copy_mem_to_register(std::vector<u8>& code, const instruction& instruction)
+static void handle_copy_mem_to_register(compiler& compiler, std::vector<u8>& code, const instruction& instruction)
 {
-    // MOV r64, r/m64
+    u8 register_ = register_from_operand(instruction.operands[0].register_);
+    u64 address = instruction.operands[1].immediate;
 
-    code.push_back(0x48); // rex.w
-    code.push_back(0x8B); // MOV r64, r/m64
+    // MOV RAX, moffs643
+    if (register_ == rax)
+    {
+        code.push_back(0x48); // rex.w
+        code.push_back(0xA1); // MOV RAX, moffs643
+        
+        u64 placeholder = 0;
+        write_imm64(code, placeholder);
 
-    // reallocation step?
+        compiler.insert_reallocation
+        ({ 
+            .codeByteOffset = code.size() - sizeof(u64), 
+            .dataByteOffset = address
+         });
+    }
+    else
+    {
+        throw std::runtime_error("MOV r64, r/m64 not implemented");
+        /* implement */
+        code.push_back(0x48); // rex.w
+        code.push_back(0x8B); // MOV r64, r/m64
+    }
 }
 
 namespace kit
 {
-    void handle_copy(std::vector<u8>& code, const instruction& instruction)
+    void handle_copy(compiler& compiler, std::vector<u8>& code, const instruction& instruction)
     {
         switch(instruction.operands[0].type)
         {
@@ -60,7 +80,7 @@ namespace kit
                         return handle_copy_imm_to_register(code, instruction);
 
                     case operand::kind::memory:
-                        return handle_copy_mem_to_register(code, instruction);
+                        return handle_copy_mem_to_register(compiler, code, instruction);
                 }
             } break;
 

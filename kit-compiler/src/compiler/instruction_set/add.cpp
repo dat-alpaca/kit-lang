@@ -42,7 +42,7 @@ static void handle_add_imm_to_register(std::vector<u8>& code, const instruction&
 
 namespace kit
 {
-    void handle_add(std::vector<u8>& code, const instruction& instruction)
+    void handle_add(compiler&, std::vector<u8>& code, const instruction& instruction)
     {
         switch(instruction.operands[0].type)
         {

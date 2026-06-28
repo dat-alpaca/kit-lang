@@ -4,5 +4,6 @@
 
 namespace kit
 {
-    void handle_out(std::vector<u8>& code, const instruction& instruction);
+    class compiler;
+    void handle_out(compiler&, std::vector<u8>& code, const instruction& instruction);
 }

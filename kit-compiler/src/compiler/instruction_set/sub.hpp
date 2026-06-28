@@ -4,5 +4,6 @@
 
 namespace kit
 {
-    void handle_sub(std::vector<u8>& code, const instruction& instruction);
+    class compiler;
+    void handle_sub(compiler&, std::vector<u8>& code, const instruction& instruction);
 }

@@ -4,5 +4,6 @@
 
 namespace kit
 {
-    void handle_mul(std::vector<u8>& code, const instruction& instruction);
+    class compiler;
+    void handle_mul(compiler&, std::vector<u8>& code, const instruction& instruction);
 }

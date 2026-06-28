@@ -7,7 +7,7 @@ using namespace kit;
 
 namespace kit
 {
-    void handle_out(std::vector<kit::u8>& code, const kit::instruction& instruction)
+    void handle_out(compiler&, std::vector<kit::u8>& code, const kit::instruction& instruction)
     {
         using namespace kit;
 

@@ -8,10 +8,10 @@
 
 using namespace kit;
 
-static u64 get_instruction_size(const instruction& instruction, const handle_function& function)
+static u64 get_instruction_size(compiler& compiler, const instruction& instruction, const handle_function& function)
 {
     std::vector<u8> temporary;
-    function(temporary, instruction);
+    function(compiler, temporary, instruction);
 
     return temporary.size();
 }
@@ -44,6 +44,14 @@ namespace kit
         second_pass(statements);
     }
 
+    void compiler::insert_reallocation(reallocation&& reallocation)
+    {
+        mReallocations.push_back(std::move(reallocation));
+    }
+}
+
+namespace kit
+{
     void compiler::zeroth_pass(std::vector<statement>& statements)
     {
         for (auto& statement : statements)
@@ -114,22 +122,18 @@ namespace kit
                         instruction instruction = arg;
 
                         if (gOpcodeMap.contains(instruction.code))
-                            mSegmentPCs[mCurrentSectionID] += get_instruction_size(instruction, gOpcodeMap[instruction.code]);
+                            mSegmentPCs[mCurrentSectionID] += get_instruction_size(*this, instruction, gOpcodeMap[instruction.code]);
                     }
                     else if (mCurrentSectionID == DataSegment)
                     {
                         instruction instruction = arg;
-
-                        if (instruction.code != opcode::wb)
-                            return;
-
-                        if (instruction.operands.empty())
+                        if (instruction.code != opcode::wb || instruction.operands.empty())
                             return;
 
                         auto& dataCode = mSegments[DataSegment].code;
 
                         const auto& nameOperand = instruction.operands[0].label;
-                        mMemoryOperandMap[nameOperand] = dataCode.size();
+                        mMemoryOperandMap[nameOperand] = dataCode.size(); // + DataVirtualBaseAddress
 
                         for (auto& operand : instruction.operands)
                         {
@@ -142,6 +146,8 @@ namespace kit
                 }
             }, statement);
         }
+
+        mReallocations.clear();
     }
 
     void compiler::second_pass(std::vector<statement>& statements)
@@ -174,7 +180,7 @@ namespace kit
                     if (gOpcodeMap.contains(arg.code))
                     {
                         auto& code = mSegments[mCurrentSectionID].code;
-                        gOpcodeMap[arg.code](code, arg);
+                        gOpcodeMap[arg.code](*this, code, arg);
                     }
                 }
             }, statement);
