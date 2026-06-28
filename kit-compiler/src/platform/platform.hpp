@@ -12,3 +12,8 @@ namespace kit::platform
 
     void write_executable(std::ofstream& file, std::vector<segment>& segments);
 }
+
+namespace kit::platform
+{
+    void sys_out(std::vector<kit::u8>& code);
+}

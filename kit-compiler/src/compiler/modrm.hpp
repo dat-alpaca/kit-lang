@@ -25,6 +25,8 @@ namespace kit
         mod_field mod : 2;
     };
 
+    constexpr static inline u8 sib = 0b100;
+
     constexpr static inline u8 rax = 0b000;
     constexpr static inline u8 rcx = 0b001;
     constexpr static inline u8 rdx = 0b010; 

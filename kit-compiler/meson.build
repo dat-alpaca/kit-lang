@@ -7,9 +7,10 @@ sources = files(
     'src/parser/parser.cpp',
     'src/compiler/compiler.cpp',
 
+    'src/compiler/instruction_set/utils.cpp',
     'src/compiler/instruction_set/add.cpp',
     'src/compiler/instruction_set/copy.cpp',
-    'src/compiler/instruction_set/utils.cpp',
+    'src/compiler/instruction_set/out.cpp',
 
     'src/main.cpp',
 )

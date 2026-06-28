@@ -127,3 +127,18 @@ namespace kit::platform
         }
     }
 }
+
+namespace kit::platform
+{
+    void sys_out(std::vector<kit::u8>& code)
+    {
+        code.insert(code.end(),
+        {
+            0xB8, 0x01, 0x00, 0x00, 0x00,           // mov eax, 1
+            0xBF, 0x01, 0x00, 0x00, 0x00,           // mov edi, 1
+            0x48, 0x89, 0xE6,                       // mov rsi, rsp
+            0xBA, 0x08, 0x00, 0x00, 0x00,           // mov edx, 8
+            0x0F, 0x05,                             // syscall                  
+        });
+    }
+}
