@@ -49,6 +49,7 @@ namespace kit
         void second_pass(std::vector<statement>& statements);
 
     private:
+        void insert_entry_point(std::vector<statement>& statements);
         void resolve_instruction_operands(instruction& instruction);
 
     public: 

@@ -33,12 +33,7 @@ namespace kit
     {
         zeroth_pass(statements);
 
-        {
-            instruction inst { .code = opcode::jmp };
-            inst.operands.push_back({ .type = operand::kind::label, .label = mEntryLabel });
-            
-            statements.insert(statements.begin(), inst);
-        }
+        insert_entry_point(statements);
 
         first_pass(statements);
         second_pass(statements);
@@ -187,6 +182,14 @@ namespace kit
         }
     }
     
+    void assembler::insert_entry_point(std::vector<statement>& statements)
+    {
+        instruction inst { .code = opcode::jmp };
+        inst.operands.push_back({ .type = operand::kind::label, .label = mEntryLabel });
+            
+        statements.insert(statements.begin(), inst);
+    }
+
     void assembler::resolve_instruction_operands(instruction& instruction)
     {
         if (instruction.operands.empty())
