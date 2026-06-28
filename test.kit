@@ -1,6 +1,7 @@
 section .data
     wb m0           , 70, 73, 84, 00, 00, 00, 00, 00    ; FIT
-    wb m1           , 20, 79, 75, 00, 00, 00, 00, 00    ; _OK
+    wb m1           , 95, 79, 75, 00, 00, 00, 00, 00    ; _OK
+    wb m2           , 95, 66, 65, 68, 00, 00, 00, 00    ; _BAD
     
     wb one          , 01, 00, 00, 00, 00, 00, 00, 00
     wb endl         , 10, 00, 00, 00, 00, 00, 00, 00
@@ -19,17 +20,31 @@ _main:
     add %cx, %ax        ; cx += ax
     out %cx             ; prints KIT             
 
-    ; Prints OK:
+; Prints OK, and not BAD:
+_suffix:
     copy %ax, 10
-    cmp %ax, 1      
-    jnb _ok              ; ax > 1
-
-    ; Ignores otherwise:
-    jmp _end
+    cmp %ax, 5
+    jnb _ok             ; ax !< 5 (true)
+    jb _bad             ; ax < 5  (false)
 
 _ok:
+    copy %ax, 20
+    out %ax
+
     copy %ax, [m1]
-    out %ax             ; prints _OK           
+    out %ax             ; prints _OK
+
+    jmp _end           
+
+_bad:
+    copy %ax, 20
+    out %ax
+
+    copy %ax, [m2]
+    out %ax             ; prints _BAD  
+
+    jmp _end           
+
 
 _end:
     copy %ax, [endl]
