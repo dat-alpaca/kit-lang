@@ -1,7 +1,4 @@
 sources = files(
-    # move to platform-dependant: 
-    'src/platform/linux/executable.cpp',
-    
     'src/lexer/lexer.cpp',
     'src/parser/parser.cpp',
     'src/parser/parser.cpp',
@@ -17,6 +14,13 @@ sources = files(
 
     'src/main.cpp',
 )
+
+if host_machine.system() == 'windows'
+
+elif host_machine.system() == 'linux'
+    sources += 'src/platform/linux/executable.cpp'
+endif
+
 
 kit_compiler_includes = include_directories('src')
 
