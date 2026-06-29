@@ -56,7 +56,7 @@ If you actually want to build this thing, you are going to need:
     That's all you need to do. To test the assembler, copy the included `test.kit` file:
 
     ```bash
-    cp test.kit deploy/test.kit
+    cp example/test.kit deploy/test.kit
     cd deploy
     ./kit-assembler test.kit
     chmod +x ./main

@@ -1,0 +1,23 @@
+; This sample code computes the absolute value of the input the user inputs.
+; It technically does not work since the IN instruction only takes one byte, and doesn't convert it to an integer
+
+section .data
+    wb m1           , 00, 00, 00, 00, 00, 00, 00, 00
+
+section .text
+    entry _main
+
+_main:
+    in %ax
+    copy [m1], %ax
+    sub %ax, [m1]
+    
+    cmp %ax, [m1]
+    jb _next
+
+    sub %ax, [m1]
+    copy [m1], %ax
+
+_next:
+    copy %ax, [m1]
+    out %ax

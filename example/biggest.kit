@@ -1,0 +1,26 @@
+; This sample code outputs the biggest value amonst two inputs. Since the IN instruction only takes one byte,
+; and doesn't convert it to integers, it technically compares two characters.
+
+section .data
+    wb m0           , 00, 00, 00, 00, 00, 00, 00, 00
+
+section .text
+    entry _main
+
+_main:
+in %ax
+copy [m0], %ax
+in %ax
+
+cmp %ax, [m0]
+jb L1
+out %ax
+jmp _end
+
+L1:
+    copy %ax, [m0]
+    out %ax
+
+_end:
+    copy %ax, 10
+    out %ax
