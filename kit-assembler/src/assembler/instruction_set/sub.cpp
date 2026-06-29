@@ -23,7 +23,7 @@ static void handle_sub_imm_to_register(std::vector<u8>& code, const instruction&
     u8 register_ = register_from_operand(instruction.operands[0].register_);
 
     // SUB RAX, imm32
-    if (register_ == static_cast<u8>(register_k::ax))
+    if (register_ == rax)
     {
         code.push_back(0x48); // rex.w
         code.push_back(0x2D); // sub rax, imm32
